@@ -1,8 +1,15 @@
 from pydantic import BaseModel
 
 
-class CategorySchema(BaseModel):
+class CategoryCreateSchema(BaseModel):
     """
-    Pydantic схема для категории.
+    Pydantic схема для создания категории.
     """
     name: str
+
+
+class CategoryGetSchema(CategoryCreateSchema):
+    """
+    Pydantic схема для получения категории.
+    """
+    id: int

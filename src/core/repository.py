@@ -1,7 +1,7 @@
 from typing import Type, Generic, TypeVar
-from sqlalchemy import func, select
+from sqlalchemy import Select, func, select
+from sqlalchemy.orm import joinedload
 
-from src.core.category import respository
 from src.core.db import get_db_session
 from src.core.types import ModelType, CreateSchemaType, UpdateSchemaType
 
@@ -12,36 +12,49 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     Репозиторий нужен для работы с БД.
     """
     def __init__(self, model: Type[ModelType]):
+        """
+        Аргументы:
+            model: Sqlalchemy модель, которую будет использовать репозиторий.
+        """
         self.model = model
 
     async def get(self, id: int) -> ModelType | None:
         """
         Получение объекта по ID.
+        
+        Аргументы:
+            id: ID объекта
         """
         async with get_db_session() as session:
             stmt = select(self.model).where(self.model.id == id)
+            stmt = self._include_related(stmt)
             result = await session.execute(stmt)
-            
-            return result.scalar_one_or_none()
+            return result.unique().scalar_one_or_none()
 
     async def get_all(self, filters: UpdateSchemaType | None = None) -> list[ModelType]:
         """
         Получение всех объектов с необязательными фильтрами.
+        
+        Аргументы:
+            include_related: Загружать ли связанные объекты
         """
         async with get_db_session() as session:
             stmt = select(self.model)
+            stmt = self._include_related(stmt)
                     
             if filters:
                 processed_filters = self._convert_filters_to_lower_case(filters)
                 stmt = stmt.where(*processed_filters)
                 
             result = await session.execute(stmt)
-            
-            return list(result.scalars().all())
+            return list(result.unique().scalars().all())
 
     async def create(self, data: CreateSchemaType) -> ModelType:
         """
         Создание объекта.
+        
+        Аргументы:
+            data: Данные для создания объекта
         """
         async with get_db_session() as session:
             obj = self.model(**data.model_dump())
@@ -49,14 +62,22 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             await session.commit()
             await session.refresh(obj)
             
-            return obj
+            stmt = select(self.model).where(self.model.id == obj.id)
+            stmt = self._include_related(stmt)
+            result = await session.execute(stmt)
+            return result.unique().scalar_one()
 
     async def update(self, id: int, data: UpdateSchemaType) -> ModelType | None:
         """
         Обновление объекта.
+        
+        Аргументы:
+            id: ID объекта
+            data: Данные для обновления объекта
         """
         async with get_db_session() as session:
             stmt = select(self.model).where(self.model.id == id)
+            stmt = self._include_related(stmt)
             result = await session.execute(stmt)
             obj = result.scalar_one_or_none()
             if obj:
@@ -70,6 +91,9 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def delete(self, id: int) -> bool:
         """
         Удаление объекта.
+        
+        Аргументы:
+            id: ID объекта
         """
         async with get_db_session() as session:
             stmt = select(self.model).where(self.model.id == id)
@@ -86,6 +110,9 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def _convert_filters_to_lower_case(self, filters: UpdateSchemaType) -> list:
         """
         Вспомогательная функция для преобразования фильтров в нижний регистр.
+        
+        Аргументы:
+            filters: Фильтры для поиска
         """
         processed_filters = []
         for k, v in filters.model_dump(exclude_unset=True).items():
@@ -96,5 +123,15 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return processed_filters
     
+    def _include_related(self, stmt: Select) -> Select:
+        """
+        Вспомогательная функция для включения связанных объектов.
+        
+        Аргументы:
+            stmt: SQLAlchemy запрос
+        """
+        for relationship in self.model.__mapper__.relationships:
+            stmt = stmt.options(joinedload(getattr(self.model, relationship.key)))
+        return stmt
     
 RepositoryType = TypeVar("RepositoryType", bound=Repository)

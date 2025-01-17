@@ -1,12 +1,12 @@
 from sqlalchemy import select
 
 from src.core.category.models import Category
-from src.core.category.schemas import CategorySchema
+from src.core.category.schemas import CategoryCreateSchema
 from src.core.db import get_db_session
 from src.core.repository import Repository
 
 
-class CategoryRepository(Repository[Category, CategorySchema, None]):
+class CategoryRepository(Repository[Category, CategoryCreateSchema, None]):
     """
     Репозиторий для категорий. 
     """
@@ -17,7 +17,12 @@ class CategoryRepository(Repository[Category, CategorySchema, None]):
     async def get_by_name(self, name: str) -> Category:
         """
         Получение категории по названию.
+        
+        Аргументы:
+            name: Название категории
         """
         async with get_db_session() as session:
-            result = await session.execute(select(Category).where(Category.name == name))
+            stmt = select(Category).where(Category.name == name)
+            stmt = self._include_related(stmt)
+            result = await session.execute(stmt)
             return result.scalar_one_or_none()
