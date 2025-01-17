@@ -1,14 +1,9 @@
-from typing import Type, TypeVar, Generic
+from typing import Type, Generic
 from sqlalchemy import func, select
-from sqlalchemy.orm import DeclarativeBase
-from pydantic import BaseModel
 
 from core.db import get_db_session
+from core.types import ModelType, CreateSchemaType, UpdateSchemaType
 
-# Типы pydantic и sqlalchemy моделей
-ModelType = TypeVar("ModelType", bound=DeclarativeBase)
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
-UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -29,7 +24,7 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             
             return result.scalar_one_or_none()
 
-    async def get_all(self, filters: dict) -> list[ModelType]:
+    async def get_all(self, filters: UpdateSchemaType | None = None) -> list[ModelType]:
         """
         Получение всех объектов с необязательными фильтрами.
         """
@@ -37,7 +32,7 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             stmt = select(self.model)
                     
             if filters:
-                processed_filters = self.convert_filters_to_lower_case(filters)
+                processed_filters = self._convert_filters_to_lower_case(filters)
                 stmt = stmt.where(*processed_filters)
                 
             result = await session.execute(stmt)
@@ -82,12 +77,12 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             
             return False
 
-    def convert_filters_to_lower_case(self, filters: dict) -> list:
+    def _convert_filters_to_lower_case(self, filters: UpdateSchemaType) -> list:
         """
         Вспомогательная функция для преобразования фильтров в нижний регистр.
         """
         processed_filters = []
-        for k, v in filters.items():
+        for k, v in filters.model_dump(exclude_unset=True).items():
             if isinstance(v, str):
                 processed_filters.append(func.lower(getattr(self.model, k)).ilike(f'%{v.lower()}%'))
             else:
