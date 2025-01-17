@@ -1,9 +1,9 @@
-from typing import Type, Generic
+from typing import Type, Generic, TypeVar
 from sqlalchemy import func, select
 
-from core.db import get_db_session
-from core.types import ModelType, CreateSchemaType, UpdateSchemaType
-
+from src.core.category import respository
+from src.core.db import get_db_session
+from src.core.types import ModelType, CreateSchemaType, UpdateSchemaType
 
 
 class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -14,12 +14,12 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         self.model = model
 
-    async def get(self, uuid: str) -> ModelType | None:
+    async def get(self, id: int) -> ModelType | None:
         """
-        Получение объекта по UUID.
+        Получение объекта по ID.
         """
         async with get_db_session() as session:
-            stmt = select(self.model).where(self.model.uuid == uuid)
+            stmt = select(self.model).where(self.model.id == id)
             result = await session.execute(stmt)
             
             return result.scalar_one_or_none()
@@ -51,12 +51,15 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             
             return obj
 
-    async def update(self, uuid: str, data: UpdateSchemaType) -> ModelType | None:
+    async def update(self, id: int, data: UpdateSchemaType) -> ModelType | None:
         """
         Обновление объекта.
         """
         async with get_db_session() as session:
-            if obj := await self.get(uuid):
+            stmt = select(self.model).where(self.model.id == id)
+            result = await session.execute(stmt)
+            obj = result.scalar_one_or_none()
+            if obj:
                 for key, value in data.model_dump(exclude_unset=True).items():
                     setattr(obj, key, value)
                 await session.commit()
@@ -64,12 +67,15 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             
             return obj
 
-    async def delete(self, uuid: str) -> bool:
+    async def delete(self, id: int) -> bool:
         """
         Удаление объекта.
         """
         async with get_db_session() as session:
-            if obj := await self.get(uuid):
+            stmt = select(self.model).where(self.model.id == id)
+            result = await session.execute(stmt)
+            obj = result.scalar_one_or_none()
+            if obj:
                 await session.delete(obj)
                 await session.commit()
                 
@@ -90,3 +96,5 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return processed_filters
     
+    
+RepositoryType = TypeVar("RepositoryType", bound=Repository)

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from src.core.settings import settings
+from src.core.models import Base
 
 
 engine = create_async_engine(
@@ -17,6 +18,14 @@ AsyncSessionFactory = async_sessionmaker(
     engine,
     class_=AsyncSession
 )
+
+
+async def create_all_tables():
+    """
+    Создает все таблицы в базе данных.
+    """
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 @asynccontextmanager
