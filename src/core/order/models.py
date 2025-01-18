@@ -33,8 +33,8 @@ class OrderPosition(Base):
     """
     __tablename__ = "order_positions"
 
-    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), primary_key=True)
-    position_id: Mapped[int] = mapped_column(ForeignKey("positions.id"), primary_key=True)
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True)
+    position_id: Mapped[int] = mapped_column(ForeignKey("positions.id", ondelete="CASCADE"), primary_key=True)
     quantity: Mapped[int] = mapped_column(nullable=False, default=1)
     
     position: Mapped["Position"] = relationship(back_populates="order_positions")
@@ -63,6 +63,8 @@ class Order(Base):
         back_populates="order",
         cascade="all, delete-orphan"
     )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    user: Mapped["User"] = relationship(back_populates="orders")
     
     @hybrid_property
     def price_sum(self) -> int:

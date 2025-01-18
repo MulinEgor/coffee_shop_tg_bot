@@ -1,6 +1,7 @@
 from sqlalchemy import Select, delete, insert, select, update
 from sqlalchemy.orm import joinedload
 
+from src.core.position.models import Position
 from src.core.order.models import Order, OrderPosition
 from src.core.order.schemas import OrderCreateSchema, OrderUpdateSchema
 from src.core.db import get_db_session
@@ -26,7 +27,8 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
         async with get_db_session() as session:
             # Создание заказа
             stmt = insert(Order).values(
-                obtaining_method=data.obtaining_method
+                user_id=data.user_id,
+                obtaining_method=data.obtaining_method,
             )
             id = (await session.execute(stmt)).inserted_primary_key[0]
             
@@ -105,6 +107,7 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
             stmt: SQLAlchemy запрос
         """
         stmt = stmt.options(
-            joinedload(self.model.order_positions).joinedload(OrderPosition.position)
+            joinedload(self.model.order_positions).joinedload(OrderPosition.position).joinedload(Position.category)
         )
         return stmt
+    

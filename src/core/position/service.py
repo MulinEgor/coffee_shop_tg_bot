@@ -13,14 +13,13 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
     Сервис для позиций.
     """
     
-    def __init__(self, name: str, repository: PositionRepository, category_service: CategoryService):
+    def __init__(self, repository: PositionRepository, category_service: CategoryService):
         """
         Аргументы:
-            name: Название сервиса
             repository: Репозиторий, который будет использовать сервис
             category_service: Сервис для категорий
         """
-        super().__init__(name, repository)
+        super().__init__("PositionService", repository)
         self._category_service = category_service
         
     

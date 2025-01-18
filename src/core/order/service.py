@@ -12,14 +12,13 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
     Сервис для заказов.
     """
     
-    def __init__(self, name: str, repository: OrderRepository, position_service: PositionService):
+    def __init__(self, repository: OrderRepository, position_service: PositionService):
         """
         Аргументы:
-            name: Название сервиса
             repository: Репозиторий, который будет использовать сервис
             position_service: Сервис для позиций
         """
-        super().__init__(name, repository)
+        super().__init__("OrderService", repository)
         self._position_service = position_service
         
     async def create(self, data: OrderCreateSchema, include_related: bool = True) -> OrderGetSchema:
@@ -89,6 +88,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
 
         return OrderGetSchema(
             id=obj.id,
+            user_id=obj.user_id,
             date=obj.date,
             status=Status(obj.status),
             obtaining_method=ObtainingMethod(obj.obtaining_method),

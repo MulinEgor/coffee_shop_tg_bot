@@ -8,6 +8,14 @@ class CategoryService(Service[Category, CategoryCreateSchema, CategoryGetSchema,
     """
     Сервис для категорий.
     """
+    
+    def __init__(self, repository: CategoryRepository):
+        """
+        Аргументы:
+            repository: Репозиторий, который будет использовать сервис
+        """
+        super().__init__("CategoryService", repository)
+    
     async def create(self, data: CategoryCreateSchema, include_related: bool = True) -> CategoryGetSchema:
         """
         Создание объекта. Проверяет наличие категории с таким названием.

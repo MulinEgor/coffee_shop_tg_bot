@@ -26,6 +26,7 @@ class OrderCreateSchema(BaseModel):
     """
     Pydantic схема для создания заказа.
     """ 
+    user_id: int
     order_positions: list[OrderPositionCreateSchema]
     obtaining_method: ObtainingMethod
     
