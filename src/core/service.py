@@ -63,7 +63,7 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
         obj: ModelType = await self._repository.create(data, include_related)
         if not obj:
             self._handle_error("Не удалось создать объект")
-        self._logger.info(f"Объект успешно создан с uuid: {obj.uuid}")
+        self._logger.info(f"Объект успешно создан с id: {obj.id}")
         
         return self._convert_to_schema(obj)
 

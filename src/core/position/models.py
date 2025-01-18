@@ -13,7 +13,11 @@ class Position(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id", ondelete="CASCADE"))
     category: Mapped[Category] = relationship(back_populates="positions")
     gramms_weight: Mapped[int] = mapped_column(nullable=False)
     price: Mapped[int] = mapped_column(nullable=False)
+    order_positions: Mapped[list["OrderPosition"]] = relationship(
+        back_populates="position",
+        cascade="all, delete-orphan"
+    )

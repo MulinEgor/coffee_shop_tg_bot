@@ -7,7 +7,7 @@ from src.core.schemas import OptionalSchemaMeta
 
 class PositionBaseSchema(BaseModel):
     """
-    Базовая схема для позиции.
+    Базовая pydantic схема для позиции.
     """
     name: str
     gramms_weight: int
@@ -25,6 +25,7 @@ class PositionGetSchema(PositionBaseSchema):
     """
     Pydantic схема для получения позиции.
     """
+    id: int
     category: Optional[CategoryGetSchema] = None # Обьект являеться опциональным, потому что может быть не нужен
 
 
@@ -32,4 +33,4 @@ class PositionUpdateSchema(PositionCreateSchema, metaclass=OptionalSchemaMeta):
     """
     Pydantic схема для обновления позиции.
     """
-    id: int
+    pass
