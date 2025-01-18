@@ -33,11 +33,11 @@ class OrderPosition(Base):
     """
     __tablename__ = "order_positions"
 
-    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True)
-    position_id: Mapped[int] = mapped_column(ForeignKey("positions.id", ondelete="CASCADE"), primary_key=True)
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), primary_key=True)
+    position_id: Mapped[int] = mapped_column(ForeignKey("positions.id"), primary_key=True)
     quantity: Mapped[int] = mapped_column(nullable=False, default=1)
     
-    position: Mapped["Position"] = relationship(cascade="all, delete")
+    position: Mapped["Position"] = relationship(back_populates="order_positions")
     order: Mapped["Order"] = relationship(back_populates="order_positions")
 
 
@@ -68,5 +68,4 @@ class Order(Base):
     def price_sum(self) -> int:
         """Вычисляет общую сумму заказа."""
         return sum(order_position.position.price * order_position.quantity for order_position in self.order_positions)
-    
     
