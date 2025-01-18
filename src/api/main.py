@@ -30,11 +30,5 @@ for router in routers:
     app.include_router(router)
 
 
-# Создание таблиц в БД
-@app.on_event("startup")
-async def startup():
-    await create_all_tables()
-    
-    
 if __name__ == "__main__":
     uvicorn.run(app, host=settings.api_host, port=settings.api_port)
