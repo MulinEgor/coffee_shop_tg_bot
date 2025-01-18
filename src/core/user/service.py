@@ -21,6 +21,52 @@ class UserService(Service[User, UserCreateSchema, UserGetSchema, UserUpdateSchem
         """
         super().__init__("UserService", repository)
         self._order_service = order_service
+        
+    async def create(self, data: UserCreateSchema, include_related: bool = True) -> UserGetSchema:
+        """
+        Создание объекта. Проверяет наличие пользователя с таким ID.
+        
+        Аргументы:
+            data: Данные для создания объекта
+            include_related: Загружать ли связанные объекты
+        """
+        if await self._repository.get(data.id, False):
+            self._handle_error("Пользователь с таким ID уже существует", status_code=409)
+        
+        self._logger.info(f"Создание объекта: {data.model_dump(exclude_unset=True)}")
+        obj: User = await self._repository.create(data, include_related)
+        if not obj:
+            self._handle_error("Не удалось создать объект", status_code=400)
+        self._logger.info(f"Объект успешно создан с id: {obj.id}")
+        
+        return self._convert_to_schema(obj)
+    
+    async def update(self, id: int, data: UserUpdateSchema, include_related: bool = True) -> UserGetSchema:
+        """
+        Обновление объекта. Проверяет наличие пользователя с таким ID.
+        
+        Аргументы:
+            id: ID объекта
+            data: Данные для обновления объекта
+            include_related: Загружать ли связанные объекты
+        """
+        self._logger.info(f"Обновление объекта с id: {id} и данными: {data.model_dump(exclude_unset=True)}")
+        obj = await self.get(id, True)
+        
+        if len(list(data.model_dump(exclude_unset=True).keys())) == 0:
+            self._logger.info(f"Объект с id: {id} не изменен")
+            return self._convert_to_schema(obj)
+        
+        if data.id and await self.get(data.id, False):
+            self._handle_error("Пользователь с таким ID уже существует", status_code=409)
+
+        obj: User = await self._repository.update(id, data, include_related)
+        if not obj:
+            self._handle_error(f"Не удалось обновить объект с id: {id}", status_code=400)
+        self._logger.info(f"Объект с id: {id} успешно обновлен")
+        
+        return self._convert_to_schema(obj)
+        
 
     def _convert_to_schema(self, obj: User) -> UserGetSchema:
         """

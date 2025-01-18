@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from enum import Enum 
-from sqlalchemy import Enum as SQLAlchemyEnum, ForeignKey, String
+from sqlalchemy import Enum as SQLAlchemyEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -48,7 +48,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now())
+    date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
     status: Mapped[Status] = mapped_column(
         SQLAlchemyEnum(Status),
         nullable=False,

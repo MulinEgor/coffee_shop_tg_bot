@@ -30,7 +30,7 @@ class OrderCreateSchema(BaseModel):
     obtaining_method: ObtainingMethod
     
     
-class OrderUpdateSchema(OrderCreateSchema):
+class OrderUpdateSchema(BaseModel):
     """
     Pydantic схема для обновления заказа.
     """

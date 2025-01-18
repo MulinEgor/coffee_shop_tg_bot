@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class PositionRouterSettings(BaseModel):
-    prefix: str = "/position"
+    prefix: str = "/positions"
     tags: list[str] = ["Позиции"]
     
 

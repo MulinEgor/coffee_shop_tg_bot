@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class CategoryRouterSettings(BaseModel):
-    prefix: str = "/category"
+    prefix: str = "/categories"
     tags: list[str] = ["Категории"]
     
 
