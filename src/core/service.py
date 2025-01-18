@@ -1,17 +1,17 @@
 from abc import abstractmethod
+import logging
 from typing import Generic
 from fastapi import HTTPException
 
 from src.core.repository import RepositoryType
 from src.core.types import CreateSchemaType, GetSchemaType, ModelType, UpdateSchemaType
-from src.core.logger import get_logger
 
 
 class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaType, RepositoryType]):
     """
     Базовый класс для сервиса.
     """
-    _logger = get_logger(__name__)
+    _logger: logging.Logger
     
     def __init__(self, repository: RepositoryType):
         """

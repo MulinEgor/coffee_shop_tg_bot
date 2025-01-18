@@ -95,6 +95,7 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
                 ]
                 stmt = insert(OrderPosition).values(order_positions_data)
                 await session.execute(stmt)
+            await session.commit()
                 
             stmt = select(Order).where(Order.id == id)
             if include_related:

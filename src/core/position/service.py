@@ -1,5 +1,7 @@
+import logging
 from sqlalchemy.orm.exc import DetachedInstanceError
 
+from src.core.logger import get_logger
 from src.core.category.schemas import CategoryGetSchema
 from src.core.category.service import CategoryService
 from src.core.position.models import Position
@@ -12,6 +14,7 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
     """
     Сервис для позиций.
     """
+    _logger: logging.Logger = get_logger("PositionService")
     
     def __init__(self, repository: PositionRepository, category_service: CategoryService):
         """
