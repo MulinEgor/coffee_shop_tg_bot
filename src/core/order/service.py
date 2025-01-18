@@ -37,7 +37,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
         
         obj: Order = await self._repository.create(data, include_related)
         if not obj:
-            self._handle_error("Не удалось создать объект")
+            self._handle_error("Не удалось создать объект", status_code=400)
         self._logger.info(f"Объект успешно создан с id: {obj.id}")
         
         return self._convert_to_schema(obj)
@@ -60,7 +60,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
 
         obj: Order = await self._repository.update(id, data, include_related)
         if not obj:
-            self._handle_error(f"Не удалось обновить объект с id: {id}")
+            self._handle_error(f"Не удалось обновить объект с id: {id}", status_code=400)
         self._logger.info(f"Объект с id: {id} успешно обновлен")
         
         return self._convert_to_schema(obj)

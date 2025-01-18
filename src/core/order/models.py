@@ -5,8 +5,8 @@ from sqlalchemy import Enum as SQLAlchemyEnum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.core.position.models import Position
 from src.core.models import Base
+from src.core.user.models import User
 
 
 class Status(str, Enum):
@@ -64,7 +64,7 @@ class Order(Base):
         cascade="all, delete-orphan"
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    user: Mapped["User"] = relationship(back_populates="orders")
+    user: Mapped[User] = relationship(back_populates="orders")
     
     @hybrid_property
     def price_sum(self) -> int:
