@@ -1,6 +1,20 @@
 # ☕ Кофейный бот
 
 ## 🚀 Сборка и запуск проекта
+
+1. Установите Docker и Docker Compose.
+2. Создайте файл `.env` в корне проекта и добавьте в него следующие переменные:
+```
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=coffee_shop
+API_HOST=0.0.0.0
+API_PORT=3000
+BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+```
+3. Запустите проект с помощью docker-compose:
 ```bash
 docker compose up --build
 ```
