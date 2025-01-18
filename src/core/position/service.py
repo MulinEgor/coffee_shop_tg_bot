@@ -55,7 +55,11 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
             include_related: Загружать ли связанные объекты
         """
         self._logger.info(f"Обновление объекта с id: {id} и данными: {data.model_dump(exclude_unset=True)}")
-        await self.get(id, False)
+        obj = await self.get(id, True)
+        
+        if len(list(data.model_dump(exclude_unset=True).keys())) == 0:
+            self._logger.info(f"Объект с id: {id} не изменен")
+            return self._convert_to_schema(obj)
         
         if data.category_id and not await self._category_service.get(data.category_id, False):
             self._handle_error("Категория с таким ID не найдена", status_code=404)

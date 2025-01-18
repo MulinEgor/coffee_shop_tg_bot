@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.settings import api_settings
 from src.api.category.router import router as category_router
+from src.api.position.router import router as position_router
 
 
 # Настройка API
@@ -19,7 +20,7 @@ app.add_middleware(
 
 
 # Включение роутеров
-routers = [category_router]
+routers = [category_router, position_router]
 for router in routers:
     app.include_router(router)
     
