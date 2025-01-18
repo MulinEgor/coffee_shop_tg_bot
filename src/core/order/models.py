@@ -1,12 +1,12 @@
 from datetime import datetime
 from typing import List
 from enum import Enum 
-from sqlalchemy import Enum as SQLAlchemyEnum, ForeignKey, String
+from sqlalchemy import Enum as SQLAlchemyEnum, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from src.core.position.models import Position
 from src.core.models import Base
+from src.core.user.models import User
 
 
 class Status(str, Enum):
@@ -48,7 +48,7 @@ class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now())
+    date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
     status: Mapped[Status] = mapped_column(
         SQLAlchemyEnum(Status),
         nullable=False,
@@ -64,7 +64,7 @@ class Order(Base):
         cascade="all, delete-orphan"
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    user: Mapped["User"] = relationship(back_populates="orders")
+    user: Mapped[User] = relationship(back_populates="orders")
     
     @hybrid_property
     def price_sum(self) -> int:

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from typing import Generic
+from fastapi import HTTPException
 
 from src.core.repository import RepositoryType
 from src.core.types import CreateSchemaType, GetSchemaType, ModelType, UpdateSchemaType
@@ -30,7 +31,7 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
         self._logger.info(f"Получение объекта с id: {id}")
         data: ModelType = await self._repository.get(id, include_related)
         if not data:
-            self._handle_error(f"Объект с id: {id} не найден")
+            self._handle_error(f"Объект с id: {id} не найден", status_code=404)
         self._logger.info(f"Объект с id: {id} успешно получен")
         
         return self._convert_to_schema(data)
@@ -46,9 +47,9 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
         self._logger.info(f"Получение всех объектов с фильтрами: {filters.model_dump(exclude_unset=True) if filters else 'None'}")
         data = await self._repository.get_all(include_related, filters)
         if not data:
-            self._handle_error("Объекты не найдены")
+            self._handle_error("Объекты не найдены", status_code=404)
         self._logger.info(f"Успешно получено {len(data)} объектов")
-        
+                
         return [self._convert_to_schema(obj) for obj in data]
 
     async def create(self, data: CreateSchemaType, include_related: bool = True) -> GetSchemaType:
@@ -62,7 +63,7 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
         self._logger.info(f"Создание объекта: {data.model_dump(exclude_unset=True)}")
         obj: ModelType = await self._repository.create(data, include_related)
         if not obj:
-            self._handle_error("Не удалось создать объект")
+            self._handle_error("Не удалось создать объект", status_code=400)
         self._logger.info(f"Объект успешно создан с id: {obj.id}")
         
         return self._convert_to_schema(obj)
@@ -81,7 +82,7 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
 
         obj: ModelType = await self._repository.update(id, data, include_related)
         if not obj:
-            self._handle_error(f"Не удалось обновить объект с id: {id}")
+            self._handle_error(f"Не удалось обновить объект с id: {id}", status_code=400)
         self._logger.info(f"Объект с id: {id} успешно обновлен")
         
         return self._convert_to_schema(obj)
@@ -97,12 +98,12 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
         await self.get(id)
 
         if not await self._repository.delete(id):
-            self._handle_error(f"Не удалось удалить объект с id: {id}")
+            self._handle_error(f"Не удалось удалить объект с id: {id}", status_code=400)
         self._logger.info(f"Объект с id: {id} успешно удален")
         
         return True
 
-    def _handle_error(self, message: str):
+    def _handle_error(self, message: str, status_code: int = 400):
         """
         Вспомогающий метод для обработки ошибок.
         
@@ -110,7 +111,7 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
             message: Сообщение об ошибке
         """
         self._logger.error(message)
-        raise Exception(message)
+        raise HTTPException(status_code=status_code, detail=message)
 
     @abstractmethod
     def _convert_to_schema(self, obj: ModelType) -> GetSchemaType:

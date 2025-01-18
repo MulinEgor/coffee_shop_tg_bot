@@ -66,14 +66,18 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
         """
         async with get_db_session() as session:
             order_data = {}
+            if data.user_id is not None:
+                order_data["user_id"] = data.user_id
             if data.date:
                 order_data["date"] = data.date
             if data.status:
                 order_data["status"] = data.status
             if data.obtaining_method:
                 order_data["obtaining_method"] = data.obtaining_method
-            stmt = update(Order).where(Order.id == id).values(order_data)
-            await session.execute(stmt)
+                
+            if order_data:  
+                stmt = update(Order).where(Order.id == id).values(order_data)
+                await session.execute(stmt)
             
             if data.order_positions:
                 # Удаление старых позиций в заказе
@@ -97,7 +101,7 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
                 stmt = self._include_related(stmt)
             order = await session.execute(stmt)
             
-            return order
+            return order.unique().scalar_one()
 
     def _include_related(self, stmt: Select) -> Select:
         """

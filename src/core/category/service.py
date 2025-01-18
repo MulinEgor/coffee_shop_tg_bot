@@ -1,3 +1,4 @@
+from src.core.position.schemas import PositionGetSchema
 from src.core.category.models import Category
 from src.core.category.respository import CategoryRepository
 from src.core.category.schemas import CategoryCreateSchema, CategoryGetSchema
@@ -25,12 +26,12 @@ class CategoryService(Service[Category, CategoryCreateSchema, CategoryGetSchema,
             include_related: Загружать ли связанные объекты
         """
         if await self._repository.get_by_name(data.name, False):
-            self._handle_error("Категория с таким названием уже существует")
+            self._handle_error("Категория с таким названием уже существует", status_code=409)
         
         self._logger.info(f"Создание объекта: {data.model_dump(exclude_unset=True)}")
         obj = await self._repository.create(data, include_related)
         if not obj:
-            self._handle_error("Не удалось создать объект")
+            self._handle_error("Не удалось создать объект", status_code=400)
         self._logger.info(f"Объект успешно создан с id: {obj.id}")
         
         return self._convert_to_schema(obj)
@@ -44,5 +45,5 @@ class CategoryService(Service[Category, CategoryCreateSchema, CategoryGetSchema,
         """ 
         return CategoryGetSchema(
             id=obj.id,
-            name=obj.name,
+            name=obj.name
         )

@@ -1,5 +1,6 @@
 from sqlalchemy.orm.exc import DetachedInstanceError
 
+from src.core.user.respository import UserRepository
 from src.core.position.service import PositionService
 from src.core.order.models import ObtainingMethod, Order, Status
 from src.core.order.respository import OrderRepository
@@ -12,7 +13,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
     Сервис для заказов.
     """
     
-    def __init__(self, repository: OrderRepository, position_service: PositionService):
+    def __init__(self, repository: OrderRepository, position_service: PositionService, user_repository: UserRepository):
         """
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
@@ -20,6 +21,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
         """
         super().__init__("OrderService", repository)
         self._position_service = position_service
+        self._user_repository = user_repository
         
     async def create(self, data: OrderCreateSchema, include_related: bool = True) -> OrderGetSchema:
         """
@@ -31,13 +33,17 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
         """
         self._logger.info(f"Создание объекта: {data.model_dump(exclude_unset=True)}")
         
+        # Проверка на наличие пользователя в бд
+        if not await self._user_repository.get(data.user_id, False):
+            self._handle_error("Пользователь с таким ID не найден", status_code=404)
+        
         # Проверка на наличие позиций в бд
         for order_position in data.order_positions:
-            await self._position_service.get(order_position.position_id)
+            await self._position_service.get(order_position.position_id, False)
         
         obj: Order = await self._repository.create(data, include_related)
         if not obj:
-            self._handle_error("Не удалось создать объект")
+            self._handle_error("Не удалось создать объект", status_code=400)
         self._logger.info(f"Объект успешно создан с id: {obj.id}")
         
         return self._convert_to_schema(obj)
@@ -54,13 +60,18 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
         self._logger.info(f"Обновление объекта с id: {id} и данными: {data.model_dump(exclude_unset=True)}")
         await self.get(id)
         
+        # Проверка на наличие пользователя в бд
+        if data.user_id is not None and not await self._user_repository.get(data.user_id, False):
+            self._handle_error("Пользователь с таким ID не найден", status_code=404)
+        
         # Проверка на наличие позиций в бд
-        for order_position in data.order_positions:
-            await self._position_service.get(order_position.position_id)
+        if data.order_positions:
+            for order_position in data.order_positions:
+                await self._position_service.get(order_position.position_id)
 
         obj: Order = await self._repository.update(id, data, include_related)
         if not obj:
-            self._handle_error(f"Не удалось обновить объект с id: {id}")
+            self._handle_error(f"Не удалось обновить объект с id: {id}", status_code=400)
         self._logger.info(f"Объект с id: {id} успешно обновлен")
         
         return self._convert_to_schema(obj)

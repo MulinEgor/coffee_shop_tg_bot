@@ -32,15 +32,15 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
             include_related: Загружать ли связанные объекты
         """
         if not await self._category_service.get(data.category_id, False):
-            self._handle_error("Категория с таким ID не найдена")
+            self._handle_error("Категория с таким ID не найдена", status_code=404)
         
         if await self._repository.get_by_name(data.name, False):
-            self._handle_error("Позиция с таким названием уже существует")
+            self._handle_error("Позиция с таким названием уже существует", status_code=409)
         
         self._logger.info(f"Создание объекта: {data.model_dump(exclude_unset=True)}")
         obj: Position = await self._repository.create(data, include_related)
         if not obj:
-            self._handle_error("Не удалось создать объект")
+            self._handle_error("Не удалось создать объект", status_code=400)
         self._logger.info(f"Объект успешно создан с id: {obj.id}")
         
         return self._convert_to_schema(obj)
@@ -55,17 +55,21 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
             include_related: Загружать ли связанные объекты
         """
         self._logger.info(f"Обновление объекта с id: {id} и данными: {data.model_dump(exclude_unset=True)}")
-        await self.get(id, False)
+        obj = await self.get(id, True)
+        
+        if len(list(data.model_dump(exclude_unset=True).keys())) == 0:
+            self._logger.info(f"Объект с id: {id} не изменен")
+            return self._convert_to_schema(obj)
         
         if data.category_id and not await self._category_service.get(data.category_id, False):
-            self._handle_error("Категория с таким ID не найдена")
+            self._handle_error("Категория с таким ID не найдена", status_code=404)
         
         if data.name and await self._repository.get_by_name(data.name, False):
-            self._handle_error("Позиция с таким названием уже существует")
+            self._handle_error("Позиция с таким названием уже существует", status_code=409)
 
         obj: Position = await self._repository.update(id, data, include_related)
         if not obj:
-            self._handle_error(f"Не удалось обновить объект с id: {id}")
+            self._handle_error(f"Не удалось обновить объект с id: {id}", status_code=400)
         self._logger.info(f"Объект с id: {id} успешно обновлен")
         
         return self._convert_to_schema(obj)

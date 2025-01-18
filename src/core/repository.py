@@ -87,7 +87,7 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             if include_related:
                 stmt = self._include_related(stmt)
             result = await session.execute(stmt)
-            obj = result.scalar_one_or_none()
+            obj = result.unique().scalar_one_or_none()
             if obj:
                 for key, value in data.model_dump(exclude_unset=True).items():
                     setattr(obj, key, value)
