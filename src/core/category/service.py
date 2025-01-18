@@ -15,7 +15,7 @@ class CategoryService(Service[Category, CategoryCreateSchema, CategoryGetSchema,
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
         """
-        super().__init__("CategoryService", repository)
+        super().__init__(repository)
     
     async def create(self, data: CategoryCreateSchema, include_related: bool = True) -> CategoryGetSchema:
         """

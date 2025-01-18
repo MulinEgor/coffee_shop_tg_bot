@@ -11,13 +11,13 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
     """
     Базовый класс для сервиса.
     """
-    def __init__(self, name: str, repository: RepositoryType):
+    _logger = get_logger(__name__)
+    
+    def __init__(self, repository: RepositoryType):
         """
         Аргументы:
-            name: Название сервиса
             repository: Репозиторий, который будет использовать сервис
         """
-        self._logger = get_logger(name)
         self._repository = repository
 
     async def get(self, id: int, include_related: bool = True) -> GetSchemaType:
@@ -123,3 +123,4 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
             obj: Модель для преобразования
         """
         raise NotImplementedError
+    

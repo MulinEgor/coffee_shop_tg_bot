@@ -2,6 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.client.default import DefaultBotProperties  
 
 from src.core.settings import settings
 from src.bot.handlers import register_handlers
@@ -13,7 +14,7 @@ async def main():
     """
     Точка входа бота.
     """
-    bot = Bot(token=settings.bot_token, parse_mode=ParseMode.HTML)
+    bot = Bot(token=settings.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=MemoryStorage())
     
     # Регистрация обработчиков, middleware и callbackов

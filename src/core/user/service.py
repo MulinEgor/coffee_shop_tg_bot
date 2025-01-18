@@ -19,7 +19,7 @@ class UserService(Service[User, UserCreateSchema, UserGetSchema, UserUpdateSchem
             repository: Репозиторий, который будет использовать сервис
             order_service: Сервис для заказов
         """
-        super().__init__("UserService", repository)
+        super().__init__(repository)
         self._order_service = order_service
         
     async def create(self, data: UserCreateSchema, include_related: bool = True) -> UserGetSchema:

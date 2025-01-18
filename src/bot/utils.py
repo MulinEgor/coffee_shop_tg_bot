@@ -10,7 +10,7 @@ def format_cart_text(cart: Cart) -> str:
     
     text = "🛒 Корзина:\n\n"
     for item in cart.items.values():
-        text += f"• {item.name} x{item.quantity} - {item.price * item.quantity}₽\n"
+        text += f"• {item.position.name} x{item.quantity} - {item.position.price * item.quantity}₽\n"
     text += f"\nИтого: {cart.total_price}₽"
     return text
 

@@ -19,7 +19,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
             repository: Репозиторий, который будет использовать сервис
             position_service: Сервис для позиций
         """
-        super().__init__("OrderService", repository)
+        super().__init__(repository)
         self._position_service = position_service
         self._user_repository = user_repository
         

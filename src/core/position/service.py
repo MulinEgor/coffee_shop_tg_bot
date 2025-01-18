@@ -19,7 +19,7 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
             repository: Репозиторий, который будет использовать сервис
             category_service: Сервис для категорий
         """
-        super().__init__("PositionService", repository)
+        super().__init__(repository)
         self._category_service = category_service
         
     

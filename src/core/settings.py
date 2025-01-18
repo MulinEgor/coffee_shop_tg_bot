@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     postgres_host: str
     postgres_port: int
     postgres_db: str
+    api_host: str
+    api_port: int
     bot_token: str
     
     @property

@@ -1,5 +1,5 @@
 from typing import Dict, List
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 
 from src.core.position.schemas import PositionGetSchema
 from src.core.order.schemas import OrderPositionCreateSchema
@@ -9,9 +9,7 @@ class CartItem(BaseModel):
     """Модель элемента корзины."""
     position: PositionGetSchema 
     quantity: int = Field(gt=0, default=1)
-    
-    model_config = ConfigDict(frozen=True)
-    
+        
     @property
     def total_price(self) -> int:
         """Общая стоимость позиции."""

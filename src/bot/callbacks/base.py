@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
+from fastapi import HTTPException
 
 from src.core.user.service import UserService
 from src.core.user.schemas import UserCreateSchema
@@ -17,13 +18,26 @@ async def role_callback(callback: CallbackQuery, state: FSMContext, user_service
     role = callback.data.split(":")[1]
     
     # Создаем пользователя
-    await user_service.create(UserCreateSchema(
-        id=callback.from_user.id,
-        role=Role(role)
-    ))
+    try:
+        user = await user_service.create(UserCreateSchema(
+            id=callback.from_user.id,
+            role=Role(role)
+        ))
+    except HTTPException as e:
+        await callback.message.answer(
+            f"Произошла ошибка при создании пользователя: {e.detail}"
+        )
+        return
     
     await state.clear()
-    await callback.message.edit_text(
-        "Роль успешно выбрана!\n"
-        "Используйте /menu чтобы открыть меню"
-    ) 
+    
+    if user.role == Role.CLIENT:
+        await callback.message.edit_text(
+            "Роль успешно выбрана!\n"
+            "Используйте /menu чтобы открыть меню"
+        )
+    elif user.role == Role.BARISTA:
+        await callback.message.edit_text(
+            "Роль успешно выбрана!\n"
+            "Используйте /orders чтобы посмотреть список заказов"
+        ) 
