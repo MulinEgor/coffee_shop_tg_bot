@@ -19,63 +19,67 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
         self._logger = get_logger(name)
         self._repository = repository
 
-    async def get(self, id: int) -> GetSchemaType:
+    async def get(self, id: int, include_related: bool = True) -> GetSchemaType:
         """
         Получение объекта по ID.
         
         Аргументы:
             id: ID объекта
+            include_related: Загружать ли связанные объекты
         """
         self._logger.info(f"Получение объекта с id: {id}")
-        data: ModelType = await self._repository.get(id)
+        data: ModelType = await self._repository.get(id, include_related)
         if not data:
             self._handle_error(f"Объект с id: {id} не найден")
         self._logger.info(f"Объект с id: {id} успешно получен")
         
         return self._convert_to_schema(data)
 
-    async def get_all(self, filters: UpdateSchemaType | None = None) -> list[GetSchemaType]:
+    async def get_all(self, filters: UpdateSchemaType | None = None, include_related: bool = True) -> list[GetSchemaType]:
         """
         Получение всех объектов.
         
         Аргументы:
             filters: Фильтры для поиска
+            include_related: Загружать ли связанные объекты
         """
         self._logger.info(f"Получение всех объектов с фильтрами: {filters.model_dump(exclude_unset=True) if filters else 'None'}")
-        data = await self._repository.get_all(filters)
+        data = await self._repository.get_all(include_related, filters)
         if not data:
             self._handle_error("Объекты не найдены")
         self._logger.info(f"Успешно получено {len(data)} объектов")
         
         return [self._convert_to_schema(obj) for obj in data]
 
-    async def create(self, data: CreateSchemaType) -> GetSchemaType:
+    async def create(self, data: CreateSchemaType, include_related: bool = True) -> GetSchemaType:
         """
         Создание объекта.
         
         Аргументы:
             data: Данные для создания объекта
+            include_related: Загружать ли связанные объекты
         """
         self._logger.info(f"Создание объекта: {data.model_dump(exclude_unset=True)}")
-        obj: ModelType = await self._repository.create(data)
+        obj: ModelType = await self._repository.create(data, include_related)
         if not obj:
             self._handle_error("Не удалось создать объект")
         self._logger.info(f"Объект успешно создан с uuid: {obj.uuid}")
         
         return self._convert_to_schema(obj)
 
-    async def update(self, id: int, data: UpdateSchemaType) -> GetSchemaType:
+    async def update(self, id: int, data: UpdateSchemaType, include_related: bool = True) -> GetSchemaType:
         """
         Обновление объекта.
         
         Аргументы:
             id: ID объекта
             data: Данные для обновления объекта
+            include_related: Загружать ли связанные объекты
         """
         self._logger.info(f"Обновление объекта с id: {id} и данными: {data.model_dump(exclude_unset=True)}")
         await self.get(id)
 
-        obj: ModelType = await self._repository.update(id, data)
+        obj: ModelType = await self._repository.update(id, data, include_related)
         if not obj:
             self._handle_error(f"Не удалось обновить объект с id: {id}")
         self._logger.info(f"Объект с id: {id} успешно обновлен")

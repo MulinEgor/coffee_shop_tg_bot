@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 from src.core.category.schemas import CategoryGetSchema
@@ -24,7 +25,7 @@ class PositionGetSchema(PositionBaseSchema):
     """
     Pydantic схема для получения позиции.
     """
-    category: CategoryGetSchema
+    category: Optional[CategoryGetSchema] = None # Обьект являеться опциональным, потому что может быть не нужен
 
 
 class PositionUpdateSchema(PositionCreateSchema, metaclass=OptionalSchemaMeta):
