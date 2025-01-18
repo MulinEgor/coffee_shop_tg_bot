@@ -1,23 +1,23 @@
 from abc import abstractmethod
+import logging
 from typing import Generic
 from fastapi import HTTPException
 
 from src.core.repository import RepositoryType
 from src.core.types import CreateSchemaType, GetSchemaType, ModelType, UpdateSchemaType
-from src.core.logger import get_logger
 
 
 class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaType, RepositoryType]):
     """
     Базовый класс для сервиса.
     """
-    def __init__(self, name: str, repository: RepositoryType):
+    _logger: logging.Logger
+    
+    def __init__(self, repository: RepositoryType):
         """
         Аргументы:
-            name: Название сервиса
             repository: Репозиторий, который будет использовать сервис
         """
-        self._logger = get_logger(name)
         self._repository = repository
 
     async def get(self, id: int, include_related: bool = True) -> GetSchemaType:
@@ -123,3 +123,4 @@ class Service(Generic[ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaTy
             obj: Модель для преобразования
         """
         raise NotImplementedError
+    

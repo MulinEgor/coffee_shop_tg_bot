@@ -1,5 +1,7 @@
+import logging
 from sqlalchemy.orm.exc import DetachedInstanceError
 
+from src.core.logger import get_logger
 from src.core.user.respository import UserRepository
 from src.core.position.service import PositionService
 from src.core.order.models import ObtainingMethod, Order, Status
@@ -12,6 +14,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
     """
     Сервис для заказов.
     """
+    _logger: logging.Logger = get_logger("OrderService")
     
     def __init__(self, repository: OrderRepository, position_service: PositionService, user_repository: UserRepository):
         """
@@ -19,7 +22,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
             repository: Репозиторий, который будет использовать сервис
             position_service: Сервис для позиций
         """
-        super().__init__("OrderService", repository)
+        super().__init__(repository)
         self._position_service = position_service
         self._user_repository = user_repository
         

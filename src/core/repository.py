@@ -132,7 +132,7 @@ class Repository(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         processed_filters = []
         for k, v in filters.model_dump(exclude_unset=True).items():
-            if isinstance(v, str):
+            if isinstance(v, str) and v.lower() in self.model.__mapper__.columns:
                 processed_filters.append(func.lower(getattr(self.model, k)).ilike(f'%{v.lower()}%'))
             else:
                 processed_filters.append(getattr(self.model, k) == v)

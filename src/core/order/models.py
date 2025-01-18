@@ -13,18 +13,18 @@ class Status(str, Enum):
     """
     Статус заказа.
     """
-    PROCESSING = "processing"
-    COMPLETED = "completed"
-    CANCELLED = "cancelled"
+    PROCESSING = "Обрабатываеться"
+    COMPLETED = "Готов"
+    CANCELLED = "Отменен"
     
     
 class ObtainingMethod(str, Enum):
     """
     Способ получения заказа.
     """
-    TAKEAWAY = "takeaway" # С собой
-    INPLACE = "inplace" # Здесь
-    DELIVERY = "delivery" # Доставка
+    TAKEAWAY = "Самовывоз" 
+    INPLACE = "На месте" 
+    DELIVERY = "Доставка" 
     
     
 class OrderPosition(Base):

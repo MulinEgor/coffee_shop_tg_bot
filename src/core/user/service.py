@@ -1,5 +1,7 @@
+import logging
 from sqlalchemy.orm.exc import DetachedInstanceError
 
+from src.core.logger import get_logger
 from src.core.order.service import OrderService
 from src.core.user.models import Role, User
 from src.core.user.respository import UserRepository
@@ -11,6 +13,8 @@ class UserService(Service[User, UserCreateSchema, UserGetSchema, UserUpdateSchem
     """
     Сервис для пользователей.
     """
+    _logger: logging.Logger = get_logger("UserService")
+    
     def __init__(self, repository: UserRepository, order_service: OrderService):
         """
         Инициализация сервиса.
@@ -19,7 +23,7 @@ class UserService(Service[User, UserCreateSchema, UserGetSchema, UserUpdateSchem
             repository: Репозиторий, который будет использовать сервис
             order_service: Сервис для заказов
         """
-        super().__init__("UserService", repository)
+        super().__init__(repository)
         self._order_service = order_service
         
     async def create(self, data: UserCreateSchema, include_related: bool = True) -> UserGetSchema:

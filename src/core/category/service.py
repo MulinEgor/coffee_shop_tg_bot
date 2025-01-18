@@ -1,3 +1,6 @@
+import logging
+
+from src.core.logger import get_logger
 from src.core.position.schemas import PositionGetSchema
 from src.core.category.models import Category
 from src.core.category.respository import CategoryRepository
@@ -9,13 +12,14 @@ class CategoryService(Service[Category, CategoryCreateSchema, CategoryGetSchema,
     """
     Сервис для категорий.
     """
-    
+    _logger: logging.Logger = get_logger("CategoryService")
+
     def __init__(self, repository: CategoryRepository):
         """
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
         """
-        super().__init__("CategoryService", repository)
+        super().__init__(repository)
     
     async def create(self, data: CategoryCreateSchema, include_related: bool = True) -> CategoryGetSchema:
         """
