@@ -1,8 +1,4 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.ext.declarative import declarative_base
 
 
-class Base(DeclarativeBase):
-    """
-    Базовый класс для моделей.
-    """
-    pass
+Base = declarative_base()
