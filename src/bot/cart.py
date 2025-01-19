@@ -9,17 +9,19 @@ class CartItem(BaseModel):
     """Модель элемента корзины."""
     position: PositionGetSchema 
     quantity: int = Field(gt=0, default=1)
+    weight: int = Field(gt=0)
         
     @property
     def total_price(self) -> int:
         """Общая стоимость позиции."""
-        return self.position.price * self.quantity
+        return int((self.weight / 100) * self.position.price) * self.quantity
     
     def to_order_position(self) -> OrderPositionCreateSchema:
         """Конвертация в позицию заказа."""
         return OrderPositionCreateSchema(
             position_id=self.position.id,
-            quantity=self.quantity
+            quantity=self.quantity,
+            weight=self.weight
         )
 
 
@@ -27,25 +29,28 @@ class Cart(BaseModel):
     """Модель корзины."""
     items: Dict[int, CartItem] = Field(default_factory=dict)
     
-    def add_item(self, position: PositionGetSchema, quantity: int = 1) -> None:
+    def add_item(self, position: PositionGetSchema, quantity: int = 1, weight: int = 100) -> None:
         """
         Добавление позиции в корзину.
         
         Аргументы:
             position: Позиция меню
             quantity: Количество
+            weight: Вес в граммах
         """
         if position.id in self.items:
             current_item = self.items[position.id]
             new_quantity = current_item.quantity + quantity
             self.items[position.id] = CartItem(
                 position=position,
-                quantity=new_quantity
+                quantity=new_quantity,
+                weight=weight
             )
         else:
             self.items[position.id] = CartItem(
                 position=position,
-                quantity=quantity
+                quantity=quantity,
+                weight=weight
             )
     
     def remove_item(self, position_id: int) -> None:

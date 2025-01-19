@@ -115,4 +115,21 @@ def get_order_status_keyboard(order_id: int) -> InlineKeyboardMarkup:
             callback_data=f"status:{order_id}:{Status.CANCELLED.value}"
         )
     )
+    return builder.as_markup()
+
+
+def get_weight_keyboard(position_id: int) -> InlineKeyboardMarkup:
+    """Клавиатура выбора веса."""
+    builder = InlineKeyboardBuilder()
+    weights = [100, 200, 300, 400, 500]  # Доступные варианты веса
+    for weight in weights:
+        builder.add(InlineKeyboardButton(
+            text=f"{weight}г",
+            callback_data=f"weight:{position_id}:{weight}"
+        ))
+    builder.add(InlineKeyboardButton(
+        text="◀️ Назад",
+        callback_data="back_to_positions"
+    ))
+    builder.adjust(3, 2, 1)
     return builder.as_markup() 

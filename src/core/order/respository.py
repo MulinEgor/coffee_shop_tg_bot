@@ -37,7 +37,8 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
                 {
                     "order_id": id,
                     "position_id": order_position.position_id,
-                    "quantity": order_position.quantity
+                    "quantity": order_position.quantity,
+                    "weight": order_position.weight
                 }
                 for order_position in data.order_positions
             ]
@@ -89,7 +90,8 @@ class OrderRepository(Repository[Order, OrderCreateSchema, OrderUpdateSchema]):
                     {
                         "order_id": id,
                         "position_id": order_position.position_id,
-                        "quantity": order_position.quantity
+                        "quantity": order_position.quantity,
+                        "weight": order_position.weight
                     }
                     for order_position in data.order_positions
                 ]

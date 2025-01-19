@@ -29,16 +29,22 @@ class ObtainingMethod(str, Enum):
     
 class OrderPosition(Base):
     """
-    Промежуточная sqlalchemy модель для связи заказа и позиций с указанием количества
+    Промежуточная sqlalchemy модель для связи заказа и позиций с указанием количества и веса
     """
     __tablename__ = "order_positions"
 
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True)
     position_id: Mapped[int] = mapped_column(ForeignKey("positions.id", ondelete="CASCADE"), primary_key=True)
     quantity: Mapped[int] = mapped_column(nullable=False, default=1)
+    weight: Mapped[int] = mapped_column(nullable=False)  # Вес в граммах
     
     position: Mapped["Position"] = relationship(back_populates="order_positions")
     order: Mapped["Order"] = relationship(back_populates="order_positions")
+
+    @property
+    def total_price(self) -> int:
+        """Вычисляет общую стоимость позиции с учетом веса."""
+        return int((self.weight / 100) * self.position.price) * self.quantity
 
 
 class Order(Base):
@@ -67,7 +73,7 @@ class Order(Base):
     user: Mapped[User] = relationship(back_populates="orders")
     
     @hybrid_property
-    def price_sum(self) -> int:
+    def total_price(self) -> int:
         """Вычисляет общую сумму заказа."""
-        return sum(order_position.position.price * order_position.quantity for order_position in self.order_positions)
+        return sum(order_position.total_price for order_position in self.order_positions)
     

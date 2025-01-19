@@ -18,7 +18,7 @@ from src.bot.keyboards import (
     get_quantity_keyboard,
     get_cart_keyboard,
     get_obtaining_method_keyboard,
-    get_role_keyboard
+    get_weight_keyboard
 )
 from src.bot.states import OrderStates
 from src.bot.cart import get_cart
@@ -64,9 +64,26 @@ async def position_callback(callback: CallbackQuery, state: FSMContext, position
         return
     
     await state.update_data(position=position)
+    await state.set_state(OrderStates.selecting_weight)
+    await callback.message.edit_text(
+        f"Выберите вес для {position.name} (цена за 100г - {position.price}₽):",
+        reply_markup=get_weight_keyboard(position_id)
+    )
+
+
+@router.callback_query(OrderStates.selecting_weight, F.data.startswith("weight:"))
+async def weight_callback(callback: CallbackQuery, state: FSMContext):
+    """Обработчик выбора веса."""
+    position_id = int(callback.data.split(":")[1])
+    weight = int(callback.data.split(":")[2])
+    
+    data = await state.get_data()
+    position = data["position"]
+    
+    await state.update_data(weight=weight)
     await state.set_state(OrderStates.selecting_quantity)
     await callback.message.edit_text(
-        f"Выберите количество для {position.name}:",
+        f"Выберите количество для {position.name} ({weight}г):",
         reply_markup=get_quantity_keyboard(position_id)
     )
 
@@ -79,12 +96,15 @@ async def quantity_callback(callback: CallbackQuery, state: FSMContext, category
     
     data = await state.get_data()
     position = data["position"]
+    weight = data["weight"]
     
     cart = get_cart(callback.from_user.id)
-    cart.add_item(position, quantity)
+    cart.add_item(position, quantity, weight)
+    
+    price = int((weight / 100) * position.price) * quantity
     
     await callback.message.edit_text(
-        f"{position.name} x {quantity} добавлено в корзину",
+        f"{position.name} ({weight}г) x{quantity} - {price}₽ добавлено в корзину",
         reply_markup=get_categories_keyboard(await category_service.get_all())
     )
     await state.set_state(OrderStates.selecting_category)
@@ -151,8 +171,8 @@ async def obtaining_method_callback(callback: CallbackQuery, state: FSMContext, 
             user_id=callback.from_user.id,
             obtaining_method=obtaining_method,
             order_positions=[
-                {"position_id": item.position.id, "quantity": item.quantity}
-                    for item in cart.items.values()
+                item.to_order_position()
+                for item in cart.items.values()
             ]
         ))
     except HTTPException as e:
