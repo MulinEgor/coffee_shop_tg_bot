@@ -27,6 +27,8 @@ def get_categories_keyboard(categories: list) -> InlineKeyboardMarkup:
         text="🛒 Корзина",
         callback_data="cart"
     ))
+    
+    
     builder.adjust(2)
     return builder.as_markup()
 

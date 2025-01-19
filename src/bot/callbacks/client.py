@@ -17,7 +17,8 @@ from src.bot.keyboards import (
     get_positions_keyboard,
     get_quantity_keyboard,
     get_cart_keyboard,
-    get_obtaining_method_keyboard
+    get_obtaining_method_keyboard,
+    get_role_keyboard
 )
 from src.bot.states import OrderStates
 from src.bot.cart import get_cart
@@ -97,7 +98,7 @@ async def cart_callback(callback: CallbackQuery, state: FSMContext):
         format_cart_text(cart),
         reply_markup=get_cart_keyboard()
     )
-
+    
 
 @router.callback_query(F.data == "clear_cart")
 async def clear_cart_callback(callback: CallbackQuery, state: FSMContext, category_service: CategoryService):

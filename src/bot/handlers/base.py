@@ -41,6 +41,26 @@ async def start_handler(message: Message, state: FSMContext, user_service: UserS
         )
 
 
+@router.message(Command("exit"))
+async def exit_handler(message: Message, state: FSMContext, user_service: UserService):
+    """Обработчик команды /exit."""
+    try:
+        await user_service.get(message.from_user.id, False)
+    except HTTPException:
+        await message.answer(
+            "Вы не авторизованы\n"
+            "Используйте /start чтобы начать работать с ботом"
+        )
+        return
+        
+    await user_service.delete(message.from_user.id)
+    
+    await message.answer(
+        "Вы вышли из аккаунта\n"
+        "Используйте /start чтобы начать работать с ботом"
+    )
+
+
 @router.message(Command("help"))
 async def help_handler(message: Message, user_service: UserService):
     """Обработчик команды /help."""
@@ -54,6 +74,7 @@ async def help_handler(message: Message, user_service: UserService):
         await message.answer(
             "Доступные команды:\n"
             "/start - Начать работу с ботом\n"
+            "/exit - Выйти из аккаунта\n"
             "/menu - Открыть меню\n"
             "/help - Показать список команд"
         )
@@ -61,6 +82,7 @@ async def help_handler(message: Message, user_service: UserService):
         await message.answer(
             "Доступные команды:\n"
             "/start - Начать работу с ботом\n"
+            "/exit - Выйти из аккаунта\n"
             "/orders - Посмотреть список заказов\n"
             "/help - Показать список команд"
         )
