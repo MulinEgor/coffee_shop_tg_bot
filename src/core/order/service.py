@@ -91,14 +91,15 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
                 OrderPositionGetSchema(
                     position_id=position.position_id,
                     quantity=position.quantity,
+                    weight=position.weight,
                     position=self._position_service._convert_to_schema(position.position)
                 )
                 for position in obj.order_positions
             ]
-            price_sum = obj.price_sum
+            total_price = obj.total_price
         except DetachedInstanceError as e: # Если объект не загружен, то возвращаем пустой список
             order_positions = []
-            price_sum = None
+            total_price = None
 
         return OrderGetSchema(
             id=obj.id,
@@ -106,7 +107,7 @@ class OrderService(Service[Order, OrderCreateSchema, OrderGetSchema, OrderUpdate
             date=obj.date,
             status=Status(obj.status),
             obtaining_method=ObtainingMethod(obj.obtaining_method),
-            price_sum=price_sum,
+            total_price=total_price,
             order_positions=order_positions
         )
         

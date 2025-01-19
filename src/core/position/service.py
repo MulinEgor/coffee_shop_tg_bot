@@ -92,7 +92,6 @@ class PositionService(Service[Position, PositionCreateSchema, PositionGetSchema,
         return PositionGetSchema(
             id=obj.id,
             name=obj.name,
-            gramms_weight=obj.gramms_weight,
             price=obj.price,
             category=category,
         )

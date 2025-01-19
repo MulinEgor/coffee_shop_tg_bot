@@ -10,6 +10,7 @@ class OrderStates(StatesGroup):
     """Состояния заказа."""
     selecting_category = State()
     selecting_position = State()
+    selecting_weight = State()
     selecting_quantity = State()
     selecting_obtaining_method = State()
     confirming_order = State() 

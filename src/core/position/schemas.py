@@ -9,7 +9,6 @@ class PositionBaseSchema(BaseModel):
     Базовая pydantic схема для позиции.
     """
     name: str
-    gramms_weight: int
     price: int
 
 

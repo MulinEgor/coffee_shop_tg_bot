@@ -12,6 +12,7 @@ class OrderPositionCreateSchema(BaseModel):
     """
     position_id: int
     quantity: int
+    weight: int  
     
     
 class OrderPositionGetSchema(OrderPositionCreateSchema):
@@ -48,5 +49,5 @@ class OrderGetSchema(OrderCreateSchema):
     id: int
     date: datetime
     status: Status
-    price_sum: int | None
+    total_price: int | None
     order_positions: list[OrderPositionGetSchema]

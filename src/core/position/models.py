@@ -18,7 +18,6 @@ class Position(Base):
         "Category",
         back_populates="positions"
     )
-    gramms_weight: Mapped[int] = mapped_column(nullable=False)
     price: Mapped[int] = mapped_column(nullable=False)
     order_positions: Mapped[list[OrderPosition]] = relationship( # type: ignore
         "OrderPosition",

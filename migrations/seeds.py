@@ -14,45 +14,38 @@ positions_data = [
     {
         "name": "Американо",
         "category_name": "Кофе",
-        "gramms_weight": 200,
         "price": 150
     },
     {
         "name": "Капучино",
         "category_name": "Кофе",
-        "gramms_weight": 300,
         "price": 200
     },
     {
         "name": "Латте",
         "category_name": "Кофе",
-        "gramms_weight": 300,
         "price": 200
     },
     # Чай
     {
         "name": "Зеленый чай",
         "category_name": "Чай",
-        "gramms_weight": 300,
         "price": 100
     },
     {
         "name": "Черный чай", 
         "category_name": "Чай",
-        "gramms_weight": 300,
         "price": 100
     },
     # Десерты
     {
         "name": "Чизкейк",
         "category_name": "Десерты",
-        "gramms_weight": 150,
         "price": 250
     },
     {
         "name": "Тирамису",
         "category_name": "Десерты",
-        "gramms_weight": 150,
         "price": 300
     }
 ]
