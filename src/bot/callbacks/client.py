@@ -169,12 +169,14 @@ async def obtaining_method_callback(callback: CallbackQuery, state: FSMContext, 
     
     # Отправляем сообщение всем баристам
     bot = callback.bot
-    for barista in await user_service.get_all(filters=UserUpdateSchema(role=Role.BARISTA)):
-        await bot.send_message(
-            barista.id,
-            f"Появился новый заказ #{order.id}!"
-        )
-
+    try:
+        for barista in await user_service.get_all(filters=UserUpdateSchema(role=Role.BARISTA)):
+            await bot.send_message(
+                barista.id,
+                    f"Появился новый заказ #{order.id}!"
+                )
+    except HTTPException: # Если баристы не найдены, ничего не делаем
+        pass
 
 @router.callback_query(F.data == "categories")
 async def back_to_categories_callback(callback: CallbackQuery, state: FSMContext, category_service: CategoryService):
