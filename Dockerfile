@@ -2,8 +2,9 @@ FROM python:3.10
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements/ requirements/
 
-RUN pip install -r requirements.txt
+ARG REQUIREMENTS_FILE=requirements/base.txt
+RUN pip install -r ${REQUIREMENTS_FILE}
 
 COPY . .

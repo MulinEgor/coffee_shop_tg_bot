@@ -13,7 +13,6 @@ from src.core.position.schemas import (
 )
 from src.core.service import Service
 
-
 class PositionService(
     Service[
         Position,
@@ -30,14 +29,15 @@ class PositionService(
     _logger: logging.Logger = get_logger("PositionService")
 
     def __init__(
-        self, repository: PositionRepository, category_service: CategoryService
+        self, repository: PositionRepository, category_service: CategoryService, exception: Exception 
     ):
         """
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
             category_service: Сервис для категорий
+            exception: Исключение, которое будет использовать сервис
         """
-        super().__init__(repository)
+        super().__init__(repository, exception)
         self._category_service = category_service
 
     async def create(

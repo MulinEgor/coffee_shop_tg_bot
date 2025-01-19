@@ -1,7 +1,10 @@
 services:
   api:
     container_name: api
-    build: .
+    build:
+      context: .
+      args:
+        REQUIREMENTS_FILE: requirements/api.txt # Указываем файл с зависимостями для API
     command: >
         sh -c "
         python -m alembic upgrade head &&
@@ -16,7 +19,10 @@ services:
 
   bot:
     container_name: bot
-    build: .
+    build:
+      context: .
+      args:
+        REQUIREMENTS_FILE: requirements/bot.txt # Указываем файл с зависимостями для бота
     command: >
         sh -c "python -m src.bot.main"
     env_file:
@@ -33,7 +39,7 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_DB=${POSTGRES_DB} # Нужно явно указать название базы данных при первом запуске, иначе она не создастся
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     healthcheck:

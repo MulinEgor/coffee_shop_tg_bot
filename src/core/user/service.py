@@ -19,15 +19,16 @@ class UserService(
 
     _logger: logging.Logger = get_logger("UserService")
 
-    def __init__(self, repository: UserRepository, order_service: OrderService):
+    def __init__(self, repository: UserRepository, order_service: OrderService, exception: Exception):
         """
         Инициализация сервиса.
 
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
             order_service: Сервис для заказов
+            exception: Исключение, которое будет использовать сервис
         """
-        super().__init__(repository)
+        super().__init__(repository, exception)
         self._order_service = order_service
 
     async def create(

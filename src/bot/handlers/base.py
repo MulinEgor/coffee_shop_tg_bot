@@ -2,10 +2,10 @@ from aiogram import Router
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from fastapi import HTTPException
 
 from src.bot.keyboards import get_role_keyboard
 from src.bot.states import UserStates
+from src.core.types import ServiceException
 from src.core.user.models import Role
 from src.core.user.service import UserService
 
@@ -17,7 +17,7 @@ async def start_handler(message: Message, state: FSMContext, user_service: UserS
     """Обработчик команды /start."""
     try:
         user = await user_service.get(message.from_user.id, False)
-    except HTTPException:
+    except ServiceException:
         await state.set_state(UserStates.selecting_role)
         await message.answer(
             "Добро пожаловать в бот кофейни!\n" "Пожалуйста, выберите вашу роль:",
@@ -44,7 +44,7 @@ async def exit_handler(message: Message, state: FSMContext, user_service: UserSe
     """Обработчик команды /exit."""
     try:
         await user_service.get(message.from_user.id, False)
-    except HTTPException:
+    except ServiceException:
         await message.answer(
             "Вы не авторизованы\n" "Используйте /start чтобы начать работать с ботом"
         )
@@ -62,7 +62,7 @@ async def help_handler(message: Message, user_service: UserService):
     """Обработчик команды /help."""
     try:
         user = await user_service.get(message.from_user.id, False)
-    except HTTPException:
+    except ServiceException:
         await message.answer("Произошла ошибка при получении данных пользователя")
         return
 
