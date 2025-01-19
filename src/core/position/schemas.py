@@ -28,14 +28,12 @@ class PositionGetSchema(PositionBaseSchema):
     """
 
     id: int
-    category: Optional[CategoryGetSchema] = (
-        None  # Обьект являеться опциональным, потому что может быть не нужен
-    )
+    category: Optional[CategoryGetSchema] = None
 
 
 class PositionUpdateSchema(BaseModel):
     """
-    Pydantic схема для обновления позиции.
+    Pydantic схема для обновления позиции. Все поля необязательные.
     """
 
     category_id: Optional[int] = None

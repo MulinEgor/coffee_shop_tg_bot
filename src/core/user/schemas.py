@@ -17,7 +17,7 @@ class UserCreateSchema(BaseModel):
 
 class UserUpdateSchema(BaseModel):
     """
-    Pydantic схема для обновления пользователя.
+    Pydantic схема для обновления пользователя. Все поля необязательные.
     """
 
     role: Optional[Role] = None

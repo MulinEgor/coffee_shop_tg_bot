@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.core.order.models import ObtainingMethod, Status
 from src.core.position.schemas import PositionGetSchema
@@ -13,8 +13,8 @@ class OrderPositionCreateSchema(BaseModel):
     """
 
     position_id: int
-    quantity: int
-    weight: int
+    quantity: int = Field(ge=1, description="Количество позиций")
+    weight: int = Field(ge=1, description="Вес позиции")
 
 
 class OrderPositionGetSchema(OrderPositionCreateSchema):
@@ -37,7 +37,7 @@ class OrderCreateSchema(BaseModel):
 
 class OrderUpdateSchema(BaseModel):
     """
-    Pydantic схема для обновления заказа.
+    Pydantic схема для обновления заказа. Все поля необязательные.
     """
 
     user_id: Optional[int] = None
@@ -55,5 +55,5 @@ class OrderGetSchema(OrderCreateSchema):
     id: int
     date: datetime
     status: Status
-    total_price: int | None
+    total_price: int | None 
     order_positions: list[OrderPositionGetSchema]
