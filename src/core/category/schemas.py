@@ -6,7 +6,7 @@ class CategoryCreateSchema(BaseModel):
     Pydantic схема для создания категории.
     """
 
-    name: str 
+    name: str
 
 
 class CategoryGetSchema(CategoryCreateSchema):

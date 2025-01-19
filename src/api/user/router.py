@@ -1,11 +1,10 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
 from src.api.user.settings import router_settings
 from src.core.user.dependencies import get_user_service
 from src.core.user.schemas import UserCreateSchema, UserGetSchema, UserUpdateSchema
-from src.core.user.service import UserService
 
 router = APIRouter(**router_settings.model_dump())
 
@@ -22,7 +21,7 @@ async def get(id: int) -> UserGetSchema:
 
     Аргументы:
         id: ID пользователя
-    
+
     Возвращает:
         UserGetSchema: Данные пользователя
     """

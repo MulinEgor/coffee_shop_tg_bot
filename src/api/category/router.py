@@ -5,7 +5,6 @@ from fastapi import APIRouter, HTTPException, status
 from src.api.category.settings import router_settings
 from src.core.category.dependencies import get_category_service
 from src.core.category.schemas import CategoryCreateSchema, CategoryGetSchema
-from src.core.category.service import CategoryService
 
 router = APIRouter(**router_settings.model_dump())
 
@@ -16,9 +15,7 @@ router = APIRouter(**router_settings.model_dump())
     status_code=status.HTTP_200_OK,
     description="Получение категории по ID",
 )
-async def get(
-    id: int
-) -> CategoryGetSchema:
+async def get(id: int) -> CategoryGetSchema:
     """
     Получение категории по ID.
 
@@ -55,9 +52,7 @@ async def get_all() -> List[CategoryGetSchema]:
     status_code=status.HTTP_201_CREATED,
     description="Создание новой категории",
 )
-async def create(
-    data: CategoryCreateSchema
-) -> CategoryGetSchema:
+async def create(data: CategoryCreateSchema) -> CategoryGetSchema:
     """
     Создание новой категории.
 
@@ -88,4 +83,3 @@ async def delete(id: int):
     """
     service = get_category_service(HTTPException)
     await service.delete(id)
-    

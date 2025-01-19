@@ -3,16 +3,22 @@ from abc import abstractmethod
 from typing import Generic
 
 from src.core.repository import RepositoryType
-from src.core.types import CreateSchemaType, GetSchemaType, ModelType, UpdateSchemaType, ServiceException
+from src.core.types import (
+    CreateSchemaType,
+    GetSchemaType,
+    ModelType,
+    ServiceException,
+    UpdateSchemaType,
+)
 
 
 class Service(
     Generic[
-        ModelType, 
-        CreateSchemaType, 
-        GetSchemaType, 
-        UpdateSchemaType, 
-        RepositoryType, 
+        ModelType,
+        CreateSchemaType,
+        GetSchemaType,
+        UpdateSchemaType,
+        RepositoryType,
     ]
 ):
     """E

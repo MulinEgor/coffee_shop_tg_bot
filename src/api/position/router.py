@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
 from src.api.position.settings import router_settings
 from src.core.position.dependencies import get_position_service
@@ -9,7 +9,6 @@ from src.core.position.schemas import (
     PositionGetSchema,
     PositionUpdateSchema,
 )
-from src.core.position.service import PositionService
 
 router = APIRouter(**router_settings.model_dump())
 
@@ -43,7 +42,7 @@ async def get(id: int) -> PositionGetSchema:
 async def get_all() -> List[PositionGetSchema]:
     """
     Получение списка всех позиций.
-    
+
     Возвращает:
         List[PositionGetSchema]: Список позиций
     """

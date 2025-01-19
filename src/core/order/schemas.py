@@ -55,5 +55,5 @@ class OrderGetSchema(OrderCreateSchema):
     id: int
     date: datetime
     status: Status
-    total_price: int | None 
+    total_price: int | None
     order_positions: list[OrderPositionGetSchema]
