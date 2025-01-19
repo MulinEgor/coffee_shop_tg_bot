@@ -4,10 +4,10 @@ from aiogram.types import Message
 
 from src.bot.keyboards import get_order_status_keyboard
 from src.bot.utils import format_order_text
-from src.core.types import ServiceException
 from src.core.order.models import Status
 from src.core.order.schemas import OrderUpdateSchema
 from src.core.order.service import OrderService
+from src.core.types import ServiceException
 from src.core.user.models import Role
 from src.core.user.service import UserService
 

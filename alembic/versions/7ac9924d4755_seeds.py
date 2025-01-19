@@ -5,18 +5,19 @@ Revises: c6729e9838e3
 Create Date: 2025-01-19 20:27:24.449777
 
 """
+
 from typing import Sequence, Union
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.core.settings import settings
 from src.core.category.models import Category
 from src.core.position.models import Position
+from src.core.settings import settings
 
 # revision identifiers, used by Alembic.
-revision: str = '7ac9924d4755'
-down_revision: Union[str, None] = 'c6729e9838e3'
+revision: str = "7ac9924d4755"
+down_revision: Union[str, None] = "c6729e9838e3"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -54,10 +55,11 @@ def seed_data(connection):
         position_data["category_id"] = categories[category_name]
         connection.execute(Position.__table__.insert().values(position_data))
 
+
 def upgrade() -> None:
     engine = create_engine(settings.database_url)
     SessionLocal = sessionmaker(bind=engine)
-    
+
     with SessionLocal() as session:
         seed_data(session)
         session.commit()
@@ -66,7 +68,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     engine = create_engine(settings.database_url)
     SessionLocal = sessionmaker(bind=engine)
-    
+
     with SessionLocal() as session:
         session.execute("DELETE FROM categories")
         session.execute("DELETE FROM positions")

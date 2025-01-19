@@ -5,7 +5,6 @@ from fastapi import APIRouter, HTTPException, status
 from src.api.order.settings import router_settings
 from src.core.order.dependencies import get_order_service
 from src.core.order.schemas import OrderCreateSchema, OrderGetSchema, OrderUpdateSchema
-from src.core.order.service import OrderService
 
 router = APIRouter(**router_settings.model_dump())
 
@@ -16,9 +15,7 @@ router = APIRouter(**router_settings.model_dump())
     status_code=status.HTTP_200_OK,
     description="Получение заказа по ID",
 )
-async def get(
-    id: int
-) -> OrderGetSchema:
+async def get(id: int) -> OrderGetSchema:
     """
     Получение заказа по ID.
 
@@ -54,10 +51,8 @@ async def get_all() -> List[OrderGetSchema]:
     response_model=OrderGetSchema,
     status_code=status.HTTP_201_CREATED,
     description="Создание нового заказа",
-    )
-async def create(
-    data: OrderCreateSchema
-) -> OrderGetSchema:
+)
+async def create(data: OrderCreateSchema) -> OrderGetSchema:
     """
     Создание нового заказа.
 
@@ -77,9 +72,7 @@ async def create(
     status_code=status.HTTP_200_OK,
     description="Обновление заказа по ID",
 )
-async def update(
-    id: int, data: OrderUpdateSchema
-) -> OrderGetSchema:
+async def update(id: int, data: OrderUpdateSchema) -> OrderGetSchema:
     """
     Обновление заказа по ID.
 

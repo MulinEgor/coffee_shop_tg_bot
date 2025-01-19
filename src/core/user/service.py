@@ -19,7 +19,12 @@ class UserService(
 
     _logger: logging.Logger = get_logger("UserService")
 
-    def __init__(self, repository: UserRepository, order_service: OrderService, exception: Exception):
+    def __init__(
+        self,
+        repository: UserRepository,
+        order_service: OrderService,
+        exception: Exception,
+    ):
         """
         Инициализация сервиса.
 

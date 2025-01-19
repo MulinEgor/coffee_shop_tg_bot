@@ -11,6 +11,7 @@ from src.core.user.dependencies import get_user_service
 
 class ServiceException(Exception):
     """Исключение для сервисов."""
+
     pass
 
 

@@ -1,14 +1,10 @@
-from logging.config import fileConfig
-from dotenv import load_dotenv
-import os
 import asyncio
+from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
-
 from src.core.models import Base
 from src.core.settings import settings
 
@@ -55,11 +51,12 @@ def run_migrations_offline() -> None:
     with context.begin_transaction():
         context.run_migrations()
 
+
 async def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = settings.database_url
-    
+
     connectable = create_async_engine(
         configuration["sqlalchemy.url"],
         future=True,
@@ -71,6 +68,7 @@ async def run_migrations_online() -> None:
 
     await connectable.dispose()
 
+
 def do_run_migrations(connection):
     context.configure(
         connection=connection,
@@ -78,9 +76,10 @@ def do_run_migrations(connection):
         compare_type=True,
         include_schemas=True,
     )
-    
+
     with context.begin_transaction():
         context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

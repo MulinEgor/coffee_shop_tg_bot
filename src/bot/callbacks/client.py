@@ -12,7 +12,6 @@ from src.bot.keyboards import (
     get_weight_keyboard,
 )
 from src.bot.states import OrderStates
-from src.core.types import ServiceException
 from src.bot.utils import format_cart_text
 from src.core.category.service import CategoryService
 from src.core.order.models import ObtainingMethod
@@ -20,6 +19,7 @@ from src.core.order.schemas import OrderCreateSchema
 from src.core.order.service import OrderService
 from src.core.position.schemas import PositionUpdateSchema
 from src.core.position.service import PositionService
+from src.core.types import ServiceException
 from src.core.user.models import Role
 from src.core.user.schemas import UserUpdateSchema
 from src.core.user.service import UserService
