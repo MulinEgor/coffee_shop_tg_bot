@@ -1,14 +1,13 @@
-from aiogram import Router, F
-from aiogram.filters import CommandStart, Command
-from aiogram.types import Message
+from aiogram import Router
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
+from aiogram.types import Message
 from fastapi import HTTPException
 
-from src.core.user.models import Role
-from src.core.user.service import UserService
 from src.bot.keyboards import get_role_keyboard
 from src.bot.states import UserStates
-
+from src.core.user.models import Role
+from src.core.user.service import UserService
 
 router = Router()
 
@@ -21,12 +20,11 @@ async def start_handler(message: Message, state: FSMContext, user_service: UserS
     except HTTPException:
         await state.set_state(UserStates.selecting_role)
         await message.answer(
-            "Добро пожаловать в бот кофейни!\n"
-            "Пожалуйста, выберите вашу роль:",
-            reply_markup=get_role_keyboard()
+            "Добро пожаловать в бот кофейни!\n" "Пожалуйста, выберите вашу роль:",
+            reply_markup=get_role_keyboard(),
         )
         return
-        
+
     if user.role == Role.CLIENT:
         await message.answer(
             "Добро пожаловать в бот кофейни!\n"
@@ -48,16 +46,14 @@ async def exit_handler(message: Message, state: FSMContext, user_service: UserSe
         await user_service.get(message.from_user.id, False)
     except HTTPException:
         await message.answer(
-            "Вы не авторизованы\n"
-            "Используйте /start чтобы начать работать с ботом"
+            "Вы не авторизованы\n" "Используйте /start чтобы начать работать с ботом"
         )
         return
-        
+
     await user_service.delete(message.from_user.id)
-    
+
     await message.answer(
-        "Вы вышли из аккаунта\n"
-        "Используйте /start чтобы начать работать с ботом"
+        "Вы вышли из аккаунта\n" "Используйте /start чтобы начать работать с ботом"
     )
 
 
@@ -69,7 +65,7 @@ async def help_handler(message: Message, user_service: UserService):
     except HTTPException:
         await message.answer("Произошла ошибка при получении данных пользователя")
         return
-    
+
     if user.role == Role.CLIENT:
         await message.answer(
             "Доступные команды:\n"

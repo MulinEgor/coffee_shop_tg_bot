@@ -1,19 +1,13 @@
-from logging.config import fileConfig
-import os
 import asyncio
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import AsyncEngine
+import os
+from logging.config import fileConfig
 
 from alembic import context
+from sqlalchemy import engine_from_config, pool
+from sqlalchemy.ext.asyncio import AsyncEngine
 
-from src.core.models import Base
-from src.core.category.models import Category
-from src.core.position.models import Position
-from src.core.user.models import User
-from src.core.order.models import Order, OrderPosition
 from migrations.seeds import seed_data
+from src.core.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -28,14 +22,16 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 target_metadata = Base.metadata
 
+
 def get_url():
     user = os.getenv("POSTGRES_USER", "postgres")
     password = os.getenv("POSTGRES_PASSWORD", "postgres")
     host = os.getenv("POSTGRES_HOST", "localhost")
     port = os.getenv("POSTGRES_PORT", "5432")
     db = os.getenv("POSTGRES_DB", "postgres")
-    
+
     return f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db}"
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
@@ -49,6 +45,7 @@ def run_migrations_offline() -> None:
 
     with context.begin_transaction():
         context.run_migrations()
+
 
 async def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
@@ -67,7 +64,8 @@ async def run_migrations_online() -> None:
         await connection.run_sync(target_metadata.drop_all)  # Очищаем БД
         await connection.run_sync(target_metadata.create_all)  # Создаем таблицы
         await seed_data(connection)  # Заполняем начальными данными
-        
+
         await connection.commit()
+
 
 asyncio.run(run_migrations_online())

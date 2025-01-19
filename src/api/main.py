@@ -1,27 +1,20 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
 
-from src.core.settings import settings
-from src.core.db import create_all_tables
-from src.api.settings import api_settings
 from src.api.category.router import router as category_router
-from src.api.position.router import router as position_router
 from src.api.order.router import router as order_router
+from src.api.position.router import router as position_router
+from src.api.settings import api_settings
 from src.api.user.router import router as user_router
-
+from src.core.settings import settings
 
 # Настройка API
-app = FastAPI(
-    **api_settings.model_dump()
-)
+app = FastAPI(**api_settings.model_dump())
 
 
 # Настройка CORS
-app.add_middleware(
-    CORSMiddleware,
-    **api_settings.cors.model_dump()
-)
+app.add_middleware(CORSMiddleware, **api_settings.cors.model_dump())
 
 
 # Включение роутеров
