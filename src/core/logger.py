@@ -8,9 +8,9 @@ def get_logger(name: str) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
-    
+
     # Логирование в консоль
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)

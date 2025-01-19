@@ -8,16 +8,16 @@ from src.core.repository import Repository
 
 class CategoryRepository(Repository[Category, CategoryCreateSchema, None]):
     """
-    Репозиторий для категорий. 
+    Репозиторий для категорий.
     """
-    
+
     def __init__(self):
         super().__init__(Category)
-    
+
     async def get_by_name(self, name: str, include_related: bool) -> Category:
         """
         Получение категории по названию.
-        
+
         Аргументы:
             name: Название категории
             include_related: Загружать ли связанные объекты

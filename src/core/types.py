@@ -1,7 +1,7 @@
 from typing import TypeVar
-from sqlalchemy.orm import DeclarativeBase
-from pydantic import BaseModel
 
+from pydantic import BaseModel
+from sqlalchemy.orm import DeclarativeBase
 
 # Типы pydantic и sqlalchemy моделей
 ModelType = TypeVar("ModelType", bound=DeclarativeBase)
