@@ -7,7 +7,8 @@ services:
         REQUIREMENTS_FILE: requirements/api.txt # Указываем файл с зависимостями для API
     command: >
         sh -c "
-        python -m alembic upgrade head &&
+        alembic upgrade c6729e9838e3 &&
+        alembic upgrade head &&
         python -m src.api.main"
     env_file:
       - .env
