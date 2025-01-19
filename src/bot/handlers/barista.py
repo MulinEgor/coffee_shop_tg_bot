@@ -1,10 +1,10 @@
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
-from fastapi import HTTPException
 
 from src.bot.keyboards import get_order_status_keyboard
 from src.bot.utils import format_order_text
+from src.core.types import ServiceException
 from src.core.order.models import Status
 from src.core.order.schemas import OrderUpdateSchema
 from src.core.order.service import OrderService
@@ -21,7 +21,7 @@ async def orders_handler(
     """Обработчик команды /orders."""
     try:
         user = await user_service.get(message.from_user.id, False)
-    except HTTPException:
+    except ServiceException:
         await message.answer(
             "Вы не зарегистрированы.\n" "Используйте /start для регистрации"
         )
@@ -35,7 +35,7 @@ async def orders_handler(
         orders = await order_service.get_all(
             filters=OrderUpdateSchema(status=Status.PROCESSING)
         )
-    except HTTPException:
+    except ServiceException:
         await message.answer("Активных заказов нет")
         return
 

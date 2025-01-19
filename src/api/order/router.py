@@ -1,9 +1,9 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, HTTPException, status
 
-from src.api.order.dependencies import get_order_service
 from src.api.order.settings import router_settings
+from src.core.order.dependencies import get_order_service
 from src.core.order.schemas import OrderCreateSchema, OrderGetSchema, OrderUpdateSchema
 from src.core.order.service import OrderService
 
@@ -17,18 +17,18 @@ router = APIRouter(**router_settings.model_dump())
     description="Получение заказа по ID",
 )
 async def get(
-    id: int, service: OrderService = Depends(get_order_service)
+    id: int
 ) -> OrderGetSchema:
     """
     Получение заказа по ID.
 
     Аргументы:
         id: ID заказа
-        service: Сервис для работы с заказами
 
     Возвращает:
         OrderGetSchema: Данные заказа
     """
+    service = get_order_service(HTTPException)
     return await service.get(id)
 
 
@@ -38,18 +38,14 @@ async def get(
     status_code=status.HTTP_200_OK,
     description="Получение списка всех заказов",
 )
-async def get_all(
-    service: OrderService = Depends(get_order_service),
-) -> List[OrderGetSchema]:
+async def get_all() -> List[OrderGetSchema]:
     """
     Получение списка всех заказов.
-
-    Аргументы:
-        service: Сервис для работы с заказами
 
     Возвращает:
         List[OrderGetSchema]: Список заказов
     """
+    service = get_order_service(HTTPException)
     return await service.get_all()
 
 
@@ -60,18 +56,18 @@ async def get_all(
     description="Создание нового заказа",
     )
 async def create(
-    data: OrderCreateSchema, service: OrderService = Depends(get_order_service)
+    data: OrderCreateSchema
 ) -> OrderGetSchema:
     """
     Создание нового заказа.
 
     Аргументы:
         data: Данные для создания заказа
-        service: Сервис для работы с заказами
 
     Возвращает:
         OrderGetSchema: Созданный заказ
     """
+    service = get_order_service(HTTPException)
     return await service.create(data)
 
 
@@ -82,7 +78,7 @@ async def create(
     description="Обновление заказа по ID",
 )
 async def update(
-    id: int, data: OrderUpdateSchema, service: OrderService = Depends(get_order_service)
+    id: int, data: OrderUpdateSchema
 ) -> OrderGetSchema:
     """
     Обновление заказа по ID.
@@ -90,11 +86,11 @@ async def update(
     Аргументы:
         id: ID заказа для обновления
         data: Данные для обновления заказа
-        service: Сервис для работы с заказами
 
     Возвращает:
         OrderGetSchema: Обновленный заказ
     """
+    service = get_order_service(HTTPException)
     return await service.update(id, data)
 
 
@@ -103,15 +99,15 @@ async def update(
     status_code=status.HTTP_204_NO_CONTENT,
     description="Удаление заказа по ID",
 )
-async def delete(id: int, service: OrderService = Depends(get_order_service)):
+async def delete(id: int):
     """
     Удаление заказа по ID.
 
     Аргументы:
         id: ID заказа для удаления
-        service: Сервис для работы с заказами
 
     Возвращает:
         None
     """
+    service = get_order_service(HTTPException)
     await service.delete(id)

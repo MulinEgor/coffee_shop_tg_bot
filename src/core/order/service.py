@@ -32,13 +32,16 @@ class OrderService(
         repository: OrderRepository,
         position_service: PositionService,
         user_repository: UserRepository,
+        exception: Exception,
     ):
         """
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
             position_service: Сервис для позиций
+            user_repository: Репозиторий для пользователей
+            exception: Исключение, которое будет использовать сервис
         """
-        super().__init__(repository)
+        super().__init__(repository, exception)
         self._position_service = position_service
         self._user_repository = user_repository
 

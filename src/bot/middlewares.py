@@ -3,10 +3,15 @@ from typing import Any, Awaitable, Callable, Dict
 from aiogram import Dispatcher
 from aiogram.types import TelegramObject
 
-from src.api.category.dependencies import get_category_service
-from src.api.order.dependencies import get_order_service
-from src.api.position.dependencies import get_position_service
-from src.api.user.dependencies import get_user_service
+from src.core.category.dependencies import get_category_service
+from src.core.order.dependencies import get_order_service
+from src.core.position.dependencies import get_position_service
+from src.core.user.dependencies import get_user_service
+
+
+class ServiceException(Exception):
+    """Исключение для сервисов."""
+    pass
 
 
 def register_middlewares(dp: Dispatcher):

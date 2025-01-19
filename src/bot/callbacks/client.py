@@ -1,7 +1,6 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from fastapi import HTTPException
 
 from src.bot.cart import get_cart
 from src.bot.keyboards import (
@@ -13,6 +12,7 @@ from src.bot.keyboards import (
     get_weight_keyboard,
 )
 from src.bot.states import OrderStates
+from src.core.types import ServiceException
 from src.bot.utils import format_cart_text
 from src.core.category.service import CategoryService
 from src.core.order.models import ObtainingMethod
@@ -40,7 +40,7 @@ async def category_callback(
         positions = await position_service.get_all(
             filters=PositionUpdateSchema(category_id=category_id)
         )
-    except HTTPException:
+    except ServiceException:
         await callback.message.answer(
             "Отсутствуют позиции в этой категории.\n" "Свяжитесь с администратором"
         )
@@ -60,7 +60,7 @@ async def position_callback(
     position_id = int(callback.data.split(":")[1])
     try:
         position = await position_service.get(position_id)
-    except HTTPException:
+    except ServiceException:
         await callback.message.answer("Отсутствует позиция с таким ID.")
         return
 
@@ -131,7 +131,7 @@ async def clear_cart_callback(
 
     try:
         categories = await category_service.get_all()
-    except HTTPException:
+    except ServiceException:
         await callback.message.answer(
             "Отсутствуют категории товаров.\n" "Свяжитесь с администратором"
         )
@@ -181,7 +181,7 @@ async def obtaining_method_callback(
                 ],
             )
         )
-    except HTTPException as e:
+    except ServiceException as e:
         await callback.message.answer(
             f"Произошла ошибка при создании заказа: {e.detail}"
         )
@@ -201,7 +201,7 @@ async def obtaining_method_callback(
             filters=UserUpdateSchema(role=Role.BARISTA)
         ):
             await bot.send_message(barista.id, f"Появился новый заказ #{order.id}!")
-    except HTTPException:  # Если баристы не найдены, ничего не делаем
+    except ServiceException:  # Если баристы не найдены, ничего не делаем
         pass
 
 
@@ -212,7 +212,7 @@ async def back_to_categories_callback(
     """Обработчик возврата к категориям."""
     try:
         categories = await category_service.get_all()
-    except HTTPException:
+    except ServiceException:
         await callback.message.answer(
             "Отсутствуют категории товаров.\n" "Свяжитесь с администратором"
         )
@@ -243,7 +243,7 @@ async def back_to_positions_callback(
         positions = await position_service.get_all(
             filters=PositionUpdateSchema(category_id=category_id)
         )
-    except HTTPException:
+    except ServiceException:
         await callback.message.answer(
             "Отсутствуют позиции в этой категории.\n" "Свяжитесь с администратором"
         )

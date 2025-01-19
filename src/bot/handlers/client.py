@@ -2,11 +2,11 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-from fastapi import HTTPException
 
 from src.bot.keyboards import get_categories_keyboard
 from src.bot.states import OrderStates
 from src.core.category.service import CategoryService
+from src.core.types import ServiceException
 from src.core.user.models import Role
 from src.core.user.service import UserService
 
@@ -23,7 +23,7 @@ async def menu_handler(
     """Обработчик команды /menu."""
     try:
         user = await user_service.get(message.from_user.id, False)
-    except HTTPException:
+    except ServiceException:
         await message.answer(
             "Вы не зарегистрированы.\n" "Используйте /start для регистрации"
         )
@@ -37,7 +37,7 @@ async def menu_handler(
 
     try:
         categories = await category_service.get_all()
-    except HTTPException:
+    except ServiceException:
         await message.answer(
             "Отсутствуют категории товаров.\n" "Свяжитесь с администратором"
         )

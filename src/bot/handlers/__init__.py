@@ -1,11 +1,11 @@
 from aiogram import Dispatcher, F
 from aiogram.types import Message
 from aiogram.utils.callback_answer import CallbackAnswerMiddleware
-from fastapi import HTTPException
 
 from src.bot.handlers.barista import router as barista_router
 from src.bot.handlers.base import router as base_router
 from src.bot.handlers.client import router as client_router
+from src.core.types import ServiceException
 from src.core.user.service import UserService
 
 
@@ -25,7 +25,7 @@ def register_handlers(dp: Dispatcher):
         """Обработчик всех остальных сообщений."""
         try:
             await user_service.get(message.from_user.id, False)
-        except HTTPException:
+        except ServiceException:
             await message.answer(
                 "Произошла ошибка при получении данных пользователя.\n"
                 "Используйте /start для регистрации"

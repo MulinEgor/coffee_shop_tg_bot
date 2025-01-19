@@ -1,7 +1,7 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
-from fastapi import HTTPException
 
+from src.core.types import ServiceException
 from src.bot.utils import format_order_text
 from src.core.order.models import Status
 from src.core.order.schemas import OrderUpdateSchema
@@ -19,7 +19,7 @@ async def status_callback(
     """Обработчик изменения статуса заказа."""
     try:
         user = await user_service.get(callback.from_user.id, False)
-    except HTTPException:
+    except ServiceException:
         await callback.answer(
             "Вы не зарегистрированы.\n" "Используйте /start для регистрации"
         )
@@ -36,7 +36,7 @@ async def status_callback(
         order = await order_service.update(
             order_id, OrderUpdateSchema(status=Status(status))
         )
-    except HTTPException as e:
+    except ServiceException as e:
         await callback.message.answer(
             f"Произошла ошибка при изменении статуса заказа: {e.detail}"
         )

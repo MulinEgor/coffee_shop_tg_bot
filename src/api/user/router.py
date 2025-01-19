@@ -1,9 +1,9 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.api.user.dependencies import get_user_service
 from src.api.user.settings import router_settings
+from src.core.user.dependencies import get_user_service
 from src.core.user.schemas import UserCreateSchema, UserGetSchema, UserUpdateSchema
 from src.core.user.service import UserService
 
@@ -16,19 +16,17 @@ router = APIRouter(**router_settings.model_dump())
     status_code=status.HTTP_200_OK,
     description="Получение пользователя по ID",
 )
-async def get(
-    id: int, service: UserService = Depends(get_user_service)
-) -> UserGetSchema:
+async def get(id: int) -> UserGetSchema:
     """
     Получение пользователя по ID.
 
     Аргументы:
         id: ID пользователя
-        service: Сервис для работы с пользователями
-
+    
     Возвращает:
         UserGetSchema: Данные пользователя
     """
+    service = get_user_service(HTTPException)
     return await service.get(id)
 
 
@@ -38,18 +36,14 @@ async def get(
     status_code=status.HTTP_200_OK,
     description="Получение списка всех пользователей",
 )
-async def get_all(
-    service: UserService = Depends(get_user_service),
-) -> List[UserGetSchema]:
+async def get_all() -> List[UserGetSchema]:
     """
     Получение списка всех пользователей.
-
-    Аргументы:
-        service: Сервис для работы с пользователями
 
     Возвращает:
         List[UserGetSchema]: Список пользователей
     """
+    service = get_user_service(HTTPException)
     return await service.get_all()
 
 
@@ -59,19 +53,17 @@ async def get_all(
     status_code=status.HTTP_201_CREATED,
     description="Создание нового пользователя",
 )
-async def create(
-    data: UserCreateSchema, service: UserService = Depends(get_user_service)
-) -> UserGetSchema:
+async def create(data: UserCreateSchema) -> UserGetSchema:
     """
     Создание нового пользователя.
 
     Аргументы:
         data: Данные для создания пользователя
-        service: Сервис для работы с пользователями
 
     Возвращает:
         UserGetSchema: Созданный пользователь
     """
+    service = get_user_service(HTTPException)
     return await service.create(data)
 
 
@@ -81,20 +73,18 @@ async def create(
     status_code=status.HTTP_200_OK,
     description="Обновление пользователя по ID",
 )
-async def update(
-    id: int, data: UserUpdateSchema, service: UserService = Depends(get_user_service)
-) -> UserGetSchema:
+async def update(id: int, data: UserUpdateSchema) -> UserGetSchema:
     """
     Обновление пользователя по ID.
 
     Аргументы:
         id: ID пользователя для обновления
         data: Данные для обновления пользователя
-        service: Сервис для работы с пользователями
 
     Возвращает:
         UserGetSchema: Обновленный пользователь
     """
+    service = get_user_service(HTTPException)
     return await service.update(id, data)
 
 
@@ -103,15 +93,15 @@ async def update(
     status_code=status.HTTP_204_NO_CONTENT,
     description="Удаление пользователя по ID",
 )
-async def delete(id: int, service: UserService = Depends(get_user_service)):
+async def delete(id: int):
     """
     Удаление пользователя по ID.
 
     Аргументы:
         id: ID пользователя для удаления
-        service: Сервис для работы с пользователями
 
     Возвращает:
         None
     """
+    service = get_user_service(HTTPException)
     await service.delete(id)

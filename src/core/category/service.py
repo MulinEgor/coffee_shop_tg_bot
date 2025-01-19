@@ -16,12 +16,13 @@ class CategoryService(
 
     _logger: logging.Logger = get_logger("CategoryService")
 
-    def __init__(self, repository: CategoryRepository):
+    def __init__(self, repository: CategoryRepository, exception: Exception):
         """
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
+            exception: Исключение, которое будет использовать сервис
         """
-        super().__init__(repository)
+        super().__init__(repository, exception)
 
     async def create(
         self, data: CategoryCreateSchema, include_related: bool = True

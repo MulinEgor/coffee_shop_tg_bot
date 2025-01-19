@@ -2,29 +2,37 @@ import logging
 from abc import abstractmethod
 from typing import Generic
 
-from fastapi import HTTPException
-
 from src.core.repository import RepositoryType
-from src.core.types import CreateSchemaType, GetSchemaType, ModelType, UpdateSchemaType
+from src.core.types import CreateSchemaType, GetSchemaType, ModelType, UpdateSchemaType, ServiceException
 
 
 class Service(
     Generic[
-        ModelType, CreateSchemaType, GetSchemaType, UpdateSchemaType, RepositoryType
+        ModelType, 
+        CreateSchemaType, 
+        GetSchemaType, 
+        UpdateSchemaType, 
+        RepositoryType, 
     ]
 ):
-    """
+    """E
     Базовый класс для сервиса.
     """
 
     _logger: logging.Logger
 
-    def __init__(self, repository: RepositoryType):
+    def __init__(
+        self,
+        repository: RepositoryType,
+        exception: Exception,
+    ):
         """
         Аргументы:
             repository: Репозиторий, который будет использовать сервис
+            exception: Исключение, которое будет использовать сервис
         """
         self._repository = repository
+        self._exception = exception
 
     async def get(self, id: int, include_related: bool = True) -> GetSchemaType:
         """
@@ -121,15 +129,19 @@ class Service(
 
         return True
 
-    def _handle_error(self, message: str, status_code: int = 400):
+    def _handle_error(self, message: str = None, status_code: int = 400):
         """
         Вспомогающий метод для обработки ошибок.
 
         Аргументы:
             message: Сообщение об ошибке
+            status_code: Код статуса HTTP
         """
         self._logger.error(message)
-        raise HTTPException(status_code=status_code, detail=message)
+        if issubclass(self._exception, ServiceException):
+            raise self._exception(message)
+        else:
+            raise self._exception(status_code=status_code, detail=message)
 
     @abstractmethod
     def _convert_to_schema(self, obj: ModelType) -> GetSchemaType:
