@@ -1,69 +1,53 @@
-# ☕ Кофейный бот
+# ☕ Coffee shop TG bot
 
-## 📝 Подготовка проекта
+## 📝 Project Setup and Launch
 
-Создайте файл `.env` в корне проекта и добавьте в него следующие переменные или просто используйте файл `.env.example` и переименуйте его в `.env`:
-```
-POSTGRES_HOST=db
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=coffee_shop
-API_HOST=0.0.0.0
-API_PORT=3000
-BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
-```
+1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
-## 🚀 Запуск проекта
+2. Install dependencies, including dev ones:
 
-- Запустите проект с помощью docker-compose:
 ```bash
-docker compose up --build
+uv sync 
 ```
 
-- Запуск проекта вручную:
+3. Create `.env` based on `.env.example`:
+
 ```bash
-
-python -m venv .venv # Создание виртуального окружения
-source .venv/bin/activate # Активация виртуального окружения
-pip install -r requirements.txt # Установка зависимостей
-
-# В одном терминале
-python -m src.api.main # Запуск FastAPI
-
-# В другом терминале
-source .venv/bin/activate # Активация виртуального окружения
-python -m src.bot.main # Запуск телеграм-бота
+cp -r src/.env.example src/.env`
 ```
 
+4. Start docker container:
+```bash
+docker compose up -d
+```
 
-## 📁 Структура проекта
+## 📁 Project structure
 ```
 src/
-├── core/       # Модели pydantic и sqlalchemy, репозитории и сервисы
-├── api/        # Роуты и обработка HTTP запросов для админа
-├── bot/        # Логика телеграм-бота
-migrations/ # Миграции и сиды
+├── core/       - Models pydantic и sqlalchemy, repositories and services
+├── api/        - API router
+├── bot/        - Tg bot logic
+migrations/ - Migrations and seeds
 ```
 
-## ✨ Реализованный функционал
+## ✨ Functionality
 
-### 🔧 Административная часть
-- Создание и редактирование всех сущностей через FastAPI
-- Автоматическая генерация Swagger документации
-- Валидация данных с помощью Pydantic
-- Асинхронная работа с базой данных через SQLAlchemy
-- Миграции с помощью Alembic
+## 🔧 Administrative Part
+- Creation and editing of all entities through FastAPI
+- Automatic Swagger documentation generation
+- Data validation using Pydantic
+- Asynchronous database operations through SQLAlchemy
+- Migrations using Alembic
 
-### 🤖 Бот
-- Создание заказов пользователем
-- Получение уведомлений об изменении статуса заказа
-- Отправка уведомлений о новых заказах баристе
-- Возможность баристе изменить статус заказа через бота
-- Корзина для добавления нескольких позиций
-- Выбор способа получения заказа
+### 🤖 Bot
+- Order creation by users
+- Notifications about order status changes
+- Sending notifications about new orders to baristas
+- Ability for baristas to change order status through the bot
+- Shopping cart for adding multiple items
+- Choice of order pickup method
 
-## 🛠 Технологии
+## 🛠 Stack
 - FastAPI
 - SQLAlchemy
 - Alembic
@@ -72,8 +56,8 @@ migrations/ # Миграции и сиды
 - Docker
 - Pydantic
 
-## 📝 Примечание
-- API не имеет авторизации для упрощения разработки. При необходимости можно добавить JWT-аутентификацию.
-- Все взаимодействие с ботом происходит через inline-кнопки для удобства пользователя.
-- Используется паттерн Repository для абстракции работы с базой данных.
-- Сервисный слой содержит всю бизнес-логику приложения.
+## 📝 Notes
+- API doesn't have authentication for development simplicity. JWT authentication can be added if needed.
+- All bot interactions are done through inline buttons for user convenience.
+- Repository pattern is used for database operation abstraction.
+- Service layer contains all business logic of the application.
